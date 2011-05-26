@@ -1,0 +1,17 @@
+{
+    'name': 'sailthru-node-client',
+    'description': 'Node.js client for Sailthru API',
+    'version': '1.00',
+    'author': 'Prajwal Tuladhar',
+    'repository':{
+        'type': 'git',
+        'url': 'http://github.com/sailthru/sailthru-node-client.git',
+    },
+    'main': './lib/index.js',
+    'dependencies': {
+        
+    },
+    'dev-dependencies': {
+        'nodeunit': '>=0.5.0'
+    }
+}
