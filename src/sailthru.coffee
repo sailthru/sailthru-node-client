@@ -6,11 +6,8 @@ querystring = require 'querystring'
 
 {SailthruUtil} = require './sailthru_util'
 
-exports.SailthruClient = class SailthruClient
+class SailthruRequest
     valid_methods = ['GET', 'POST', 'DELETE']
-
-    constructor: (@api_key, @api_secret, @api_url=false) ->
-        @api_url = 'https://api.sailthru.com' if @api_url is false
 
     _http_request: (uri, data, method, callback) ->
         parse_uri = url.parse uri
@@ -21,7 +18,7 @@ exports.SailthruClient = class SailthruClient
             method: method
             query: data
             headers:
-                'User-Agent': 'Sailthru API Node Client'
+                'User-Agent': 'Sailthru API Node/Javascript Client'
                 Host: parse_uri.host
 
         http_protocol = if options.port is 443 then https else http
@@ -40,9 +37,9 @@ exports.SailthruClient = class SailthruClient
                 # handle error
                 rerurn false
             
-        body = ''
-
+        log method + ' Request'
         req = http_protocol.request options, (res) ->
+            body = ''
             res.setEncoding 'utf8'
             statusCode = res.statusCode
             log 'Status Code: ' + res.statusCode
@@ -51,6 +48,7 @@ exports.SailthruClient = class SailthruClient
             res.on 'end', ->
                 json_response = JSON.parse body
                 if statusCode is 200
+                    log json_response
                     callback json_response
                 else
                     json_err =
@@ -64,26 +62,37 @@ exports.SailthruClient = class SailthruClient
 
         req.end()
         
-        
-    _api_request: (action, data, request_method, callback) ->
+    _api_request: (uri, data, request_method, callback) ->
+        return @_http_request uri, data, request_method, callback
 
-        params = {}
-        params.api_key = @api_key
-        params.format = 'json'
-        params.json = @_json_payload data
-        
-        payload =
-            api_key: @api_key
-            sig: SailthruUtil.getSignatureHash params, @api_secret
-            format: 'json'
-            json: @_json_payload data
-
-        _url = url.parse @api_url
-        
-        return @_http_request _url.href + "" + action, payload, request_method, callback
+exports.SailthruClient = class SailthruClient
+    constructor: (@api_key, @api_secret, @api_url = false) ->
+        @api_url = 'https://api.sailthru.com' if @api_url is false
+        @request = new SailthruRequest
 
     _json_payload: (data) ->
-        JSON.stringify data
+        payload =
+            api_key: @api_key
+            format: 'json'
+            json: JSON.stringify data
+
+        payload.sig = SailthruUtil.getSignatureHash payload, @api_secret
+        return payload
+
+    _apiRequest: (action, data, method, callback) ->
+        _url = url.parse @api_url
+        json_payload = @_json_payload data
+        return @request._api_request _url.href + action, json_payload, method, callback
+
+    apiGet: (action, data, callback) ->
+        @_apiRequest action, data, 'GET', callback
+
+    apiPost: (action, data) ->
+        return @reuest._api_request action, data, 'POST', callback
+
+    apiDelete: (action, data) ->
+        return @reuest._api_request action, data, 'DELETE', callback
+
 
 # Public API for creating *SailthruClient*
 exports.createSailthruClient = (args...) ->
