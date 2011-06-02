@@ -35,6 +35,10 @@ exports.SailthruClient = class SailthruClient
                 string_json_data = JSON.stringify data
                 options.headers['Content-Length'] = string_json_data.length
                 options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+
+            else
+                # handle error
+                rerurn false
             
         body = ''
 
