@@ -25,61 +25,42 @@ exports.SailthruClient = class SailthruClient
                 Host: parse_uri.host
 
         http_protocol = if options.port is 443 then https else http
-        
+
         switch method
             when 'GET', 'DELETE'
                 query_string = '?' + querystring.stringify data
-
                 options.path += query_string
-                
-                req = http_protocol.request options, (res) ->
-                    res.setEncoding 'utf8'
-                    statusCode = res.statusCode
-                    log 'StatusCode: ' + statusCode
-                    body = ''
-                    res.on 'data', (chunk) ->
-                        # process.stdout.write chunk
-                        body += chunk
-                    res.on 'end', ->
-                        json_response = JSON.parse body
-                        if statusCode is 200
-                            callback json_response
-                        else
-                            json_err =
-                                statusCode: statusCode
-                                error: json_response.error
-                                errormsg: json_response.errormsg
-                            callback body, json_err
-                req.end()
-
+            
             when 'POST'
-                options.headers['Content-Length'] = JSON.stringify(data).length
+                string_json_data = JSON.stringify data
+                options.headers['Content-Length'] = string_json_data.length
                 options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+            
+        body = ''
 
-                #console.log options
-                body = ''
-                req = http_protocol.request options, (res) ->
-                    res.setEncoding 'utf8'
-                    log 'StatusCode: ' + res.statusCode
-                    res.on 'data', (chunk) ->
-                        body += chunk
-                    res.on 'end', ->
-                        #log body
-                        json_response = JSON.parse body
-                        if res.statusCode is 200
-                            callback json_response
-                        else
-                            json_error =
-                                statusCode: res.statusCode
-                                error: json_response.error
-                                errmsg: json_response.errmsg
-                            callback json_response, json_error
+        req = http_protocol.request options, (res) ->
+            res.setEncoding 'utf8'
+            statusCode = res.statusCode
+            log 'Status Code: ' + res.statusCode
+            res.on 'data', (chunk) ->
+                body += chunk
+            res.on 'end', ->
+                json_response = JSON.parse body
+                if statusCode is 200
+                    callback json_response
+                else
+                    json_err =
+                        statusCode: statusCode
+                        error: json_response.error
+                        errmsg: json_response.errmsg
 
-                req.write(url.format({query: options.query}).replace('?',''), 'utf8')
-                req.end()
-            else
-                return false
+                    callback json_response, json_err
 
+        req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
+
+        req.end()
+        
+        
     _api_request: (action, data, request_method, callback) ->
 
         params = {}
