@@ -59,7 +59,6 @@ class SailthruRequest
 
         req.end()
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
-
         
     _api_request: (uri, data, request_method, callback) ->
         return @_http_request uri, data, request_method, callback
@@ -92,13 +91,16 @@ exports.SailthruClient = class SailthruClient
     apiDelete: (action, data, callback) ->
         @_apiRequest action, data, 'DELETE', callback
 
+    _getOptions: (options) ->
+        return if options isnt null then options else {}
+
     getEmail: (email, callback) ->
         @apiGet 'email', {email: email}, callback
 
-    setEmail: (email, options, callback) ->
-        options = {}
-        options.email = email
-        @apiPost 'email', options, callback
+    setEmail: (email, callback, options = null) ->
+        data = @_getOptions options
+        data.email = email
+        @apiPost 'email', data, callback
 
     send: (template_name, email, vars = {}, options = {}, schedule_time = null, callback) ->
         data =
@@ -113,6 +115,11 @@ exports.SailthruClient = class SailthruClient
 
     getSend: (send_id, callback) ->
         @apiGet 'send', {send_id: send_id}, callback
+
+    cancelSend: (sendId, callback) ->
+        data =
+            send_id: sendId
+        @apiDelete 'send', data, callback
 
 
 # Public API for creating *SailthruClient*
