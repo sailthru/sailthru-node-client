@@ -23,14 +23,14 @@ class SailthruRequest
 
         http_protocol = if options.port is 443 then https else http
 
+        query_string = querystring.stringify data
+
         switch method
             when 'GET', 'DELETE'
-                query_string = '?' + querystring.stringify data
-                options.path += query_string
+                options.path += '?' + query_string
             
             when 'POST'
-                string_json_data = JSON.stringify data
-                options.headers['Content-Length'] = string_json_data.length
+                options.headers['Content-Length'] = query_string.length
                 options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
             else
@@ -48,19 +48,18 @@ class SailthruRequest
             res.on 'end', ->
                 json_response = JSON.parse body
                 if statusCode is 200
-                    log json_response
                     callback json_response
                 else
                     json_err =
                         statusCode: statusCode
                         error: json_response.error
-                        errmsg: json_response.errmsg
+                        errormsg: json_response.errormsg
 
                     callback json_response, json_err
 
+        req.end()
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
 
-        req.end()
         
     _api_request: (uri, data, request_method, callback) ->
         return @_http_request uri, data, request_method, callback
@@ -87,11 +86,33 @@ exports.SailthruClient = class SailthruClient
     apiGet: (action, data, callback) ->
         @_apiRequest action, data, 'GET', callback
 
-    apiPost: (action, data) ->
-        return @reuest._api_request action, data, 'POST', callback
+    apiPost: (action, data, callback) ->
+        @_apiRequest action, data, 'POST', callback
 
-    apiDelete: (action, data) ->
-        return @reuest._api_request action, data, 'DELETE', callback
+    apiDelete: (action, data, callback) ->
+        @_apiRequest action, data, 'DELETE', callback
+
+    getEmail: (email, callback) ->
+        @apiGet 'email', {email: email}, callback
+
+    setEmail: (email, options, callback) ->
+        options = {}
+        options.email = email
+        @apiPost 'email', options, callback
+
+    send: (template_name, email, vars = {}, options = {}, schedule_time = null, callback) ->
+        data =
+            template: template_name
+            email: email
+
+        data.vars = vars if vars.length > 0
+        data.options = options if options.length > 0
+        data.schedule_time = schedule_time if schedule_time isnt null
+
+        @apiPost 'send', data, callback
+
+    getSend: (send_id, callback) ->
+        @apiGet 'send', {send_id: send_id}, callback
 
 
 # Public API for creating *SailthruClient*
