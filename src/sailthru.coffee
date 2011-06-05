@@ -102,15 +102,16 @@ exports.SailthruClient = class SailthruClient
         data.email = email
         @apiPost 'email', data, callback
 
-    send: (template_name, email, vars = {}, options = {}, schedule_time = null, callback) ->
-        data =
-            template: template_name
-            email: email
+    send: (template, email, callback, options = null) ->
+        data = _getOptions options
+        data.template = template
+        data.email = email
+        @apiPost 'send', data, callback
 
-        data.vars = vars if vars.length > 0
-        data.options = options if options.length > 0
-        data.schedule_time = schedule_time if schedule_time isnt null
-
+    multiSend: (template, emails, callback, options = null) ->
+        data = @_getOptions options
+        data.template = template
+        data.email = if emails instanceof Array then emails.join(',') else emails
         @apiPost 'send', data, callback
 
     getSend: (send_id, callback) ->
