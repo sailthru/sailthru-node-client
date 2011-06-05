@@ -122,6 +122,54 @@ exports.SailthruClient = class SailthruClient
             send_id: sendId
         @apiDelete 'send', data, callback
 
+    getBlast: (blastId, callback) ->
+        data =
+            blast_id: blastId
+        @apiGet 'blast', data, callback
+
+    deleteBlast: (blastId, callback) ->
+        data =
+            blast_id: blastId
+        @apiDelete 'blast', data, callback
+
+    cancelBlast: (blastId, callback) ->
+        data = 
+            blast_id: blastId
+            schedule_time: ''
+        @apiPost 'blast', data, callback
+
+    updateBlast: (blastId, callback, options = null) ->
+        data = @_getOptions options
+        data.blast_id = blastId
+        @apiPost 'blast', data, callback
+
+    scheduleBlastFromBlast: (blastId, scheduleTime, callback, options = null) ->
+        data = @_getOptions options
+        data.blast_id = blastId
+        data.schedule_time = scheduleTime
+        @apiPost 'blast', data, callback
+
+    scheduleBlastFromTemplate: (blastId, template, list, scheduleTime, callback, options = null) ->
+        data = @_getOptions options
+        data.blast_id = blastId
+        data.copy_template = template
+        data.list = list
+        data.schedule_time = scheduleTime
+        
+        @apiPost 'blast', data, callback
+
+    scheduleBlast: (name, list, scheduleTime, fromName, fromEmail, subject, contentHtml, contentText, callback, options) ->
+        data = @_getOptions options
+        data.name = name
+        data.list = list
+        data.schedule_time = scheduleTime
+        data.from_name = fromName
+        data.from_emai = fromEmail
+        data.subject = subject
+        data.content_html = contentHtml
+        data.content_text = contentText
+        
+        @apiPost 'blast', data, callback
 
 # Public API for creating *SailthruClient*
 exports.createSailthruClient = (args...) ->
