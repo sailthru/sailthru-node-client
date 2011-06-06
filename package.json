@@ -1,17 +1,23 @@
 {
-    'name': 'sailthru-node-client',
+    'name': 'sailthru-client',
     'description': 'Node.js client for Sailthru API',
-    'version': '1.00',
-    'author': 'Prajwal Tuladhar',
+    'version': '0.01',
+    'author': {
+        'name': 'Prajwal Tuladhar',
+        'email': 'praj@sailthru.com',
+        'url': 'http://infynyxx.com'
+    },
     'repository':{
         'type': 'git',
         'url': 'http://github.com/sailthru/sailthru-node-client.git',
     },
-    'main': './lib/index.js',
+    'main': './lib/sailthru.js',
     'dependencies': {
-        
+        'hashlib': '>=1.0.0'
     },
     'dev-dependencies': {
-        'nodeunit': '>=0.5.0'
-    }
+        'nodeunit': '>=0.5.0',
+        'coffee-script': '>=1.1.1'
+    },
+    'engines': {'node': '0.4'}
 }
