@@ -1,11 +1,16 @@
-{md5} = require('hashlib')
+crypto  = require 'crypto'
 
 exports.SailthruUtil = class SailthruUtil
     @getSignatureHash: (params, secret) ->
-        return md5(SailthruUtil.getSignatureString params, secret)
+        return SailthruUtil.md5(SailthruUtil.getSignatureString params, secret)
 
     @getSignatureString: (params, secret) ->
         return secret + SailthruUtil.extractParamValues(params).sort().join('')
+
+    @md5: (data) ->
+        md5 = crypto.createHash('md5')
+        md5.update data
+        return md5.digest 'hex'
 
     @extractParamValues: (params) ->
         values = []
