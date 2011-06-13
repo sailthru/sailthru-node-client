@@ -82,6 +82,7 @@ exports.SailthruClient = class SailthruClient
         json_payload = @_json_payload data
         return @request._api_request _url.href + action, json_payload, method, callback
 
+    # Native API methods: GET< DELETE and POST
     apiGet: (action, data, callback) ->
         @_apiRequest action, data, 'GET', callback
 
@@ -94,6 +95,7 @@ exports.SailthruClient = class SailthruClient
     _getOptions: (options) ->
         return if options isnt null then options else {}
 
+    # Email API Call
     getEmail: (email, callback) ->
         @apiGet 'email', {email: email}, callback
 
@@ -102,6 +104,7 @@ exports.SailthruClient = class SailthruClient
         data.email = email
         @apiPost 'email', data, callback
 
+    # Send API Call
     send: (template, email, callback, options = null) ->
         data = _getOptions options
         data.template = template
@@ -122,6 +125,7 @@ exports.SailthruClient = class SailthruClient
             send_id: sendId
         @apiDelete 'send', data, callback
 
+    # Blast API Call
     getBlast: (blastId, callback) ->
         data =
             blast_id: blastId
@@ -158,7 +162,7 @@ exports.SailthruClient = class SailthruClient
         
         @apiPost 'blast', data, callback
 
-    scheduleBlast: (name, list, scheduleTime, fromName, fromEmail, subject, contentHtml, contentText, callback, options) ->
+    scheduleBlast: (name, list, scheduleTime, fromName, fromEmail, subject, contentHtml, contentText, callback, options = null) ->
         data = @_getOptions options
         data.name = name
         data.list = list
@@ -170,6 +174,121 @@ exports.SailthruClient = class SailthruClient
         data.content_text = contentText
         
         @apiPost 'blast', data, callback
+
+    # Template API Call
+    getTemplates: (callback) ->
+        @apiGet 'template', {}, callback
+
+    getTemplate: (template, callback) ->
+        data =
+            template: template
+        @apiGet 'template', data, callback
+
+    getTemplateFromRevision: (revisionId, callback) ->
+        data =
+            revision: revisionId
+        @apiGet 'template', data, callback
+
+    saveTemplate: (template, callback, options = null) ->
+        data = @_getOptions options
+        data.template = template
+        @apiPost 'template', data, callback
+
+    saveTemplateFromRevision: (template, revisionId, callback) ->
+        options =
+            revision: revisionId
+        @saveTemplate template, callback, options
+
+    deleteTemplate: (template) ->
+        @apiDelete 'template', {template: template}, callback
+
+    
+    # List API Call
+    getLists: (callback) ->
+        data =
+            list: ''
+        @apiGet 'list', data, callback
+
+    deleteList: (list, callback) ->
+        data =
+            list: list
+        @apiDelete 'list', data, callback
+
+    # Contacts API Call
+    importContacts: (email, password, callback, includeNames = true) ->
+        data =
+            email: email
+            password: password
+        data.names = 1 if includeNames is true
+
+        @apiPost 'contacts', data, callback
+
+    # Content API Call
+    pushContent: (title, url, callback, options = null) ->
+        data = @_getOptions options
+        data.title = title
+        data.url = url
+        data.tags = data.tags.join(',') if data.tags and data.tags instanceof Array
+        @apiPost 'content', data, callback
+
+    # Alert API Call
+    getAlert: (email, callback) ->
+        data =
+            email: email
+        @apiGet 'alert', data, callback
+
+    saveAlert: (email, type, template, callback, options = null) ->
+        data = @_getOptions options
+        data.email = email
+        data.type = type
+        data.template = template
+        data.when = if data.when and type is 'weekly' or type is 'daily' then data.when else delete data.when
+        @apiPost 'alert', data, callback
+
+    deleteAler: (email, alertId, callback) ->
+        data =
+            email: email
+            alert_id: alertId
+        @apiDelete 'alert', data, callback
+
+    # purchase API Call
+    purchase: (email, items, callback, options) ->
+        data = @_getOptions options
+        data.email = email
+        data.items = items
+        @apiPost 'purchase', data, callback
+
+    # stats API Call
+    stats: (data, callback) ->
+        @apiGet 'stats', data, callback
+
+    statsList: (callback, options = null) ->
+        data = @_getOptions options
+        data.stat = 'blast'
+        @stats data, callback
+
+    statsBlast: (callback, options = null) ->
+        data = @_getOptions options
+        data.stat = 'blast'
+        @stats data, callback
+
+    # horizon API Call
+    getHorizon: (email, callback, hidOnly = false) ->
+        data =
+            email: email
+        data.hid_only = 1 if hidOnly is true
+        @apiGet 'horizon', data, callback
+
+    setHorizon: (email, callback, tags = null) ->
+        data =
+            email: email
+        if tags isnt null
+            data.tags = if tags instanceof Array then tags.join ',' else tags
+        @apiPost 'horizon', data, callback
+
+    # Job API Call
+    getJobStatus: (jobId, callback) ->
+        @apiGet 'job', {'job_id': job_id}, callback
 
 # Public API for creating *SailthruClient*
 exports.createSailthruClient = (args...) ->
