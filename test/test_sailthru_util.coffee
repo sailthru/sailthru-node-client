@@ -79,10 +79,9 @@ exports.testGetSignatureString = (test) ->
 
 
 exports.testGetSignatureHash = (test) ->
-    {md5} = require 'hashlib'
     test.expect 1
     secret = '1246helloMan'
-    expected1 = md5(secret + ['sailthru', 1, 2].sort().join(''))
+    expected1 = SailthruUtil.md5(secret + ['sailthru', 1, 2].sort().join(''))
     params1 =
         a: ['sailthru', 1, 2]
     real1 = SailthruUtil.getSignatureHash params1, secret
