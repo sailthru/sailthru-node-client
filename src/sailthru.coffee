@@ -137,7 +137,7 @@ exports.SailthruClient = class SailthruClient
         @apiDelete 'blast', data, callback
 
     cancelBlast: (blastId, callback) ->
-        data = 
+        data =
             blast_id: blastId
             schedule_time: ''
         @apiPost 'blast', data, callback
@@ -294,3 +294,5 @@ exports.SailthruClient = class SailthruClient
 exports.createSailthruClient = (args...) ->
     new SailthruClient args...
 
+exports.createClient = (args...) ->
+    new SailthruClient args...
