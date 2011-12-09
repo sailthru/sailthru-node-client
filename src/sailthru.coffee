@@ -106,7 +106,7 @@ exports.SailthruClient = class SailthruClient
 
     # Send API Call
     send: (template, email, callback, options = null) ->
-        data = _getOptions options
+        data = @_getOptions options
         data.template = template
         data.email = email
         @apiPost 'send', data, callback
