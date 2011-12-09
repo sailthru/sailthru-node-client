@@ -199,7 +199,7 @@ exports.SailthruClient = class SailthruClient
             revision: revisionId
         @saveTemplate template, callback, options
 
-    deleteTemplate: (template) ->
+    deleteTemplate: (template, callback) ->
         @apiDelete 'template', {template: template}, callback
 
     
