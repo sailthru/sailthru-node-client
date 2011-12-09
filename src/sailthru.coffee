@@ -28,7 +28,7 @@ class SailthruRequest
         switch method
             when 'GET', 'DELETE'
                 options.path += '?' + query_string
-            
+
             when 'POST'
                 options.headers['Content-Length'] = query_string.length
                 options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -36,13 +36,12 @@ class SailthruRequest
             else
                 # handle error
                 rerurn false
-            
-        log method + ' Request'
+
         req = http_protocol.request options, (res) ->
             body = ''
             res.setEncoding 'utf8'
             statusCode = res.statusCode
-            log 'Status Code: ' + res.statusCode
+
             res.on 'data', (chunk) ->
                 body += chunk
             res.on 'end', ->
@@ -59,7 +58,7 @@ class SailthruRequest
 
         req.end()
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
-        
+
     _api_request: (uri, data, request_method, callback) ->
         return @_http_request uri, data, request_method, callback
 
@@ -159,7 +158,7 @@ exports.SailthruClient = class SailthruClient
         data.copy_template = template
         data.list = list
         data.schedule_time = scheduleTime
-        
+
         @apiPost 'blast', data, callback
 
     scheduleBlast: (name, list, scheduleTime, fromName, fromEmail, subject, contentHtml, contentText, callback, options = null) ->
@@ -172,7 +171,7 @@ exports.SailthruClient = class SailthruClient
         data.subject = subject
         data.content_html = contentHtml
         data.content_text = contentText
-        
+
         @apiPost 'blast', data, callback
 
     # Template API Call
@@ -202,7 +201,7 @@ exports.SailthruClient = class SailthruClient
     deleteTemplate: (template, callback) ->
         @apiDelete 'template', {template: template}, callback
 
-    
+
     # List API Call
     getLists: (callback) ->
         data =
