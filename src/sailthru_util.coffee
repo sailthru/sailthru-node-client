@@ -1,4 +1,6 @@
 crypto  = require 'crypto'
+{log}   = require 'util'
+{VERSION} = require './sailthru'
 
 exports.SailthruUtil = class SailthruUtil
     @getSignatureHash: (params, secret) ->
@@ -27,3 +29,5 @@ exports.SailthruUtil = class SailthruUtil
                 values = values.concat(SailthruUtil.extractParamValues(v))
         return values
  
+exports.log = (string) ->
+    return log 'sailthru-client ' + VERSION + ' - ' + string

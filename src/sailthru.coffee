@@ -1,10 +1,19 @@
 http = require 'http'
 https = require 'https'
 url = require 'url'
-{log} = require 'util'
 querystring = require 'querystring'
 
-{SailthruUtil} = require './sailthru_util'
+###
+  API client version
+###
+exports.VERSION = '1.0.2'
+
+LOGGING = true
+
+{SailthruUtil, log} = require './sailthru_util'
+
+log2 = (string) ->
+    log string if LOGGING is true
 
 class SailthruRequest
     valid_methods = ['GET', 'POST', 'DELETE']
@@ -18,7 +27,7 @@ class SailthruRequest
             method: method
             query: data
             headers:
-                'User-Agent': 'Sailthru API Node/Javascript Client'
+                'User-Agent': 'Sailthru API Node/JavaScript Client'
                 Host: parse_uri.host
 
         http_protocol = if options.port is 443 then https else http
@@ -37,12 +46,12 @@ class SailthruRequest
                 # handle error
                 rerurn false
             
-        log method + ' Request'
+        log2 method + ' Request'
         req = http_protocol.request options, (res) ->
             body = ''
             res.setEncoding 'utf8'
             statusCode = res.statusCode
-            log 'Status Code: ' + res.statusCode
+            log2 'Status Code: ' + res.statusCode
             res.on 'data', (chunk) ->
                 body += chunk
             res.on 'end', ->
@@ -64,6 +73,11 @@ class SailthruRequest
         return @_http_request uri, data, request_method, callback
 
 class SailthruClient
+    ###
+    By default enable logging
+    ###
+    @logging = true
+
     constructor: (@api_key, @api_secret, @api_url = false) ->
         @api_url = 'https://api.sailthru.com' if @api_url is false
         @request = new SailthruRequest
@@ -81,6 +95,12 @@ class SailthruClient
         _url = url.parse @api_url
         json_payload = @_json_payload data
         return @request._api_request _url.href + action, json_payload, method, callback
+
+    enableLogging: ->
+        LOGGING = true
+
+    disableLogging: ->
+        LOGGING = false
 
     # Native API methods: GET< DELETE and POST
     apiGet: (action, data, callback) ->
@@ -296,3 +316,4 @@ exports.createSailthruClient = (args...) ->
 
 exports.createClient = (args...) ->
     new SailthruClient args...
+
