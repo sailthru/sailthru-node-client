@@ -63,7 +63,7 @@ class SailthruRequest
     _api_request: (uri, data, request_method, callback) ->
         return @_http_request uri, data, request_method, callback
 
-exports.SailthruClient = class SailthruClient
+class SailthruClient
     constructor: (@api_key, @api_secret, @api_url = false) ->
         @api_url = 'https://api.sailthru.com' if @api_url is false
         @request = new SailthruRequest
