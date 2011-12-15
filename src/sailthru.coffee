@@ -2,6 +2,7 @@ http = require 'http'
 https = require 'https'
 url = require 'url'
 querystring = require 'querystring'
+rest = require 'restler'
 
 ###
   API client version
@@ -18,7 +19,7 @@ log2 = (string) ->
 class SailthruRequest
     valid_methods = ['GET', 'POST', 'DELETE']
 
-    _http_request: (uri, data, method, callback) ->
+    _http_request: (uri, data, method, callback, binary_data_params = []) ->
         parse_uri = url.parse uri
         options =
             host: parse_uri.host
@@ -47,6 +48,7 @@ class SailthruRequest
                 rerurn false
             
         log2 method + ' Request'
+            
         req = http_protocol.request options, (res) ->
             body = ''
             res.setEncoding 'utf8'
@@ -68,9 +70,9 @@ class SailthruRequest
 
         req.end()
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
-        
-    _api_request: (uri, data, request_method, callback) ->
-        return @_http_request uri, data, request_method, callback
+
+    _api_request: (uri, data, request_method, callback, binary_data_params = []) ->
+        return @_http_request uri, data, request_method, callback, binary_data_params
 
 class SailthruClient
     ###
@@ -106,8 +108,28 @@ class SailthruClient
     apiGet: (action, data, callback) ->
         @_apiRequest action, data, 'GET', callback
 
-    apiPost: (action, data, callback) ->
-        @_apiRequest action, data, 'POST', callback
+    apiPost: (action, data, callback, binary_data_params = []) ->
+        if binary_data_params.length > 0 then @apiPostMultiPart action, data, callback, binary_data_params else @_apiRequest action, data, 'POST', callback
+
+    apiPostMultiPart: (action, data, callback, binary_data_params = []) ->
+        binary_data = {}
+        for param in binary_data_params
+            binary_data[param] = rest.file data[param]
+            delete data[param]
+        _url = url.parse @api_url
+        json_payload = @_json_payload data
+
+        (json_payload[param] = value for param, value of binary_data)
+
+        log2 _url.href + action
+        log2 'MultiPart Request'
+        log2 'JSON Payload: ' + JSON.stringify json_payload
+
+        rest.post(_url.href + action, {
+            multipart: true,
+            data: json_payload
+        }).on 'complete', (data) ->
+            callback data
 
     apiDelete: (action, data, callback) ->
         @_apiRequest action, data, 'DELETE', callback
@@ -309,6 +331,13 @@ class SailthruClient
     # Job API Call
     getJobStatus: (jobId, callback) ->
         @apiGet 'job', {'job_id': job_id}, callback
+
+    processJob: (job, callback, options = null, report_email = false, postback_url = false, binary_data_params = Array) ->
+        data = @_getOptions options
+        data['job'] = job
+        data['report_email'] = report_email if report_email isnt false
+        data['postback_url'] = postback_url if postback_url isnt false
+        @apiPost 'job', data, callback, binary_data_params
 
 # Public API for creating *SailthruClient*
 exports.createSailthruClient = (args...) ->

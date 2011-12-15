@@ -9,10 +9,11 @@
     },
     "repository": {
         "type": "git",
-        "url": "http://github.com/sailthru/sailthru-node-client.git"
+        "url": "git@github.com:sailthru/sailthru-node-client.git"
     },
     "main": "./lib/sailthru.js",
     "dependencies": {
+        "restler": ">=0.2.3"
     },
     "dev-dependencies": {
         "nodeunit": ">=0.5.0",
