@@ -14,10 +14,12 @@ Examples
 --------
 
 ### Initialization
-
     var apiKey = '******',
         apiSecret = '*****',
         sailthru = require('sailthru-client').createSailthruClient(apiKey, apiSecret);
+
+### Getting version
+    var version = require('sailthru-client').VERSION;
 
 ### Enable / Disable LOgging
 
