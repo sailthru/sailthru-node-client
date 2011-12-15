@@ -5,17 +5,28 @@ querystring = require 'querystring'
 rest = require 'restler'
 
 ###
-  API client version
+API client version
 ###
 exports.VERSION = '1.0.2'
 
+###
+LOGGING Flag
+###
 LOGGING = true
+
+USER_AGENT = 'Sailthru API Node/JavaScript Client'
 
 {SailthruUtil, log} = require './sailthru_util'
 
+###
+helper logging function
+###
 log2 = (string) ->
     log string if LOGGING is true
 
+###
+Private class to make HTTP request
+###
 class SailthruRequest
     valid_methods = ['GET', 'POST', 'DELETE']
 
@@ -28,7 +39,7 @@ class SailthruRequest
             method: method
             query: data
             headers:
-                'User-Agent': 'Sailthru API Node/JavaScript Client'
+                'User-Agent': USER_AGENT
                 Host: parse_uri.host
 
         http_protocol = if options.port is 443 then https else http
@@ -84,6 +95,10 @@ class SailthruClient
         @api_url = 'https://api.sailthru.com' if @api_url is false
         @request = new SailthruRequest
 
+    
+    ###
+    prepare JSON payload
+    ###
     _json_payload: (data) ->
         payload =
             api_key: @api_key
@@ -93,6 +108,10 @@ class SailthruClient
         payload.sig = SailthruUtil.getSignatureHash payload, @api_secret
         return payload
 
+    ###
+    Unified function for making request to API request
+    Doesn't handle multipart request 
+    ###
     _apiRequest: (action, data, method, callback) ->
         _url = url.parse @api_url
         json_payload = @_json_payload data
@@ -107,12 +126,22 @@ class SailthruClient
         return
 
     # Native API methods: GET< DELETE and POST
+
+    ###
+    GET call
+    ###
     apiGet: (action, data, callback) ->
         @_apiRequest action, data, 'GET', callback
 
+    ###
+    POST call
+    ###
     apiPost: (action, data, callback, binary_data_params = []) ->
         if binary_data_params.length > 0 then @apiPostMultiPart action, data, callback, binary_data_params else @_apiRequest action, data, 'POST', callback
 
+    ###
+    POST call with Multipart
+    ###
     apiPostMultiPart: (action, data, callback, binary_data_params = []) ->
         binary_data = {}
         for param in binary_data_params
@@ -129,13 +158,20 @@ class SailthruClient
 
         rest.post(_url.href + action, {
             multipart: true,
+            'User-Agent': USER_AGENT,
             data: json_payload
         }).on 'complete', (data) ->
             callback data
 
+    ###
+    DELETE call
+    ###
     apiDelete: (action, data, callback) ->
         @_apiRequest action, data, 'DELETE', callback
 
+    ###
+    options mixin
+    ###
     _getOptions: (options) ->
         return if options isnt null then options else {}
 
