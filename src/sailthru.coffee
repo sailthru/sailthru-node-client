@@ -100,9 +100,11 @@ class SailthruClient
 
     enableLogging: ->
         LOGGING = true
+        return
 
     disableLogging: ->
         LOGGING = false
+        return
 
     # Native API methods: GET< DELETE and POST
     apiGet: (action, data, callback) ->
