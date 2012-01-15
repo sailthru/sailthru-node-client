@@ -7,7 +7,7 @@ rest = require 'restler'
 ###
 API client version
 ###
-exports.VERSION = '1.0.3'
+exports.VERSION = '1.0.4'
 
 ###
 LOGGING Flag

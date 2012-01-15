@@ -1,4 +1,4 @@
-{SailthruUtil}         =      require 'sailthru_util'
+{SailthruUtil}         =      require '../lib/sailthru_util'
 {testCase}      = require 'nodeunit'
 
 exports.testExtractParams = (test) ->

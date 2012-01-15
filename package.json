@@ -1,7 +1,7 @@
 {
     "name": "sailthru-client",
     "description": "Node.js client for Sailthru API",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "author": {
         "name": "Prajwal Tuladhar",
         "email": "praj@sailthru.com",
@@ -19,5 +19,5 @@
         "nodeunit": ">=0.5.0",
         "coffee-script": ">=1.1.1"
     },
-    "engines": {"node": "0.4"}
+    "engines": {"node": ">=0.4"}
 }

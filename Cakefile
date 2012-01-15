@@ -1,7 +1,7 @@
-require.paths.unshift "#{__dirname}/node_modules"
+#require.paths.unshift "#{__dirname}/node_modules"
 
 {spawn, exec} = require 'child_process'
-{print} = require 'sys'
+{print} = require 'util'
 
 build = (watch, callback) ->
     if typeof watch is 'function'
@@ -26,7 +26,7 @@ task 'watch', 'Recompile CoffeScript when source files are modified', ->
 
 task 'test', 'Run the test suite', ->
     build ->
-        require.paths.unshift __dirname + '/lib'
+        #require.paths.unshift __dirname + '/lib'
         {reporters} = require 'nodeunit'
         process.chdir __dirname
         reporters.default.run ['test']
