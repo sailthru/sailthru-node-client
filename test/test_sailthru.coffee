@@ -2,7 +2,7 @@ SailthruClient  = require('../lib/sailthru').createSailthruClient('abcd12345','1
 {testCase}  = require 'nodeunit'
 
 exports.receiveOptoutPost = (test) ->
-    test.expect 6
+    test.expect 7
 
     # Valid params
     params1 =
@@ -47,7 +47,12 @@ exports.receiveOptoutPost = (test) ->
         email: 'foo@bar.com'
         sig: '110993c3e8786cb4ebdd509ea6115fea'
     real6 = SailthruClient.receiveOptoutPost params6
-    test.ok not real5
+    test.ok not real6
+
+    # No Params
+    params7 = undefined
+    real7 = SailthruClient.receiveOptoutPost params7
+    test.ok not real7
 
     test.done()
 

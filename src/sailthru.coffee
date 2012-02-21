@@ -379,6 +379,8 @@ class SailthruClient
 
     # Postback API Methods
     receiveOptoutPost: (params) ->
+        if typeof params is 'undefined'
+            return false
         for param in ['action','email','sig']
             if typeof params[param] is 'undefined'
                 return false
