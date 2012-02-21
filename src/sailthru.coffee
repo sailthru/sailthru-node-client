@@ -377,6 +377,21 @@ class SailthruClient
         data['postback_url'] = postback_url if postback_url isnt false
         @apiPost 'job', data, callback, binary_data_params
 
+    # Postback API Methods
+    receiveOptoutPost: (params) ->
+        if typeof params is 'undefined'
+            return false
+        for param in ['action','email','sig']
+            if typeof params[param] is 'undefined'
+                return false
+        if params['action'] isnt 'optout'
+            return false
+        sig = params['sig']
+        delete params['sig']
+        if sig isnt SailthruUtil.getSignatureHash params, @api_secret
+            return false
+        else return true
+
 # Public API for creating *SailthruClient*
 exports.createSailthruClient = (args...) ->
     new SailthruClient args...
