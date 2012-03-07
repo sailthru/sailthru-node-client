@@ -1,5 +1,6 @@
 {SailthruUtil}         =      require '../lib/sailthru_util'
 {testCase}      = require 'nodeunit'
+{exec, spawn} = require 'child_process'
 
 exports.testExtractParams = (test) ->
     test.expect 4
@@ -88,4 +89,26 @@ exports.testGetSignatureHash = (test) ->
     test.equal real1, expected1
 
     test.done()
+
+exports.testMd5 = (test) ->
+    test.expect 1
+    data1 = 'simple_text'
+    hash1 = SailthruUtil.md5 data1
+    cmd1 = "python -c 'import hashlib; print hashlib.md5(\"" + data1 + "\").hexdigest()'"
+    
+    exec1 = exec cmd1, (error, stdout, stderr) ->
+        test.equal stdout.trim(), hash1
+        #test.done()
+    
+    data2 = "नमस्ते विश्व"
+    hash2 = SailthruUtil.md5 data2
+
+    cmd2 = "python -c 'import hashlib; print hashlib.md5(\"" + data2 + "\").hexdigest()'"
+    
+    exec2 = exec cmd2, (error, stdout, stderr) ->
+        test.equal stdout.trim(), hash2
+    
+    exec2.on 'exit', (code) ->
+        test.done()
+
 
