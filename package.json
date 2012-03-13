@@ -1,7 +1,7 @@
 {
     "name": "sailthru-client",
     "description": "Node.js client for Sailthru API",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "author": {
         "name": "Prajwal Tuladhar",
         "email": "praj@sailthru.com",
@@ -9,7 +9,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git@github.com:sailthru/sailthru-node-client.git"
+        "url": "http://github.com/sailthru/sailthru-node-client.git"
     },
     "main": "./lib/sailthru.js",
     "dependencies": {
