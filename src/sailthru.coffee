@@ -68,16 +68,23 @@ class SailthruRequest
             res.on 'data', (chunk) ->
                 body += chunk
             res.on 'end', ->
-                json_response = JSON.parse body
-                if statusCode is 200
-                    callback json_response
-                else
-                    json_err =
-                        statusCode: statusCode
-                        error: json_response.error
-                        errormsg: json_response.errormsg
+                try
+                    json_response = JSON.parse body
+                    if statusCode is 200
+                        callback json_response
+                    else
+                        json_err =
+                            statusCode: statusCode
+                            error: json_response.error
+                            errormsg: json_response.errormsg
 
                     callback json_response, json_err
+                catch error
+                    json_err =
+                        statusCode: 0,
+                        error: 0,
+                        errormsg: error
+                    callback error, json_err
 
         req.end()
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
