@@ -83,8 +83,8 @@ class SailthruRequest
                     json_err =
                         statusCode: 0,
                         error: 0,
-                        errormsg: error
-                    callback error, json_err
+                        errormsg: error.message
+                    callback error.message, json_err
 
         req.end()
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
