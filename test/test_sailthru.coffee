@@ -1,4 +1,7 @@
 SailthruClient  = require('../lib/sailthru').createSailthruClient('abcd12345','1324qwerty')
+SailthruClientBadUrl  = require('../lib/sailthru').createSailthruClient('abcd12345','1324qwerty', 'http://foo')
+SailthruClient.disableLogging();
+SailthruClientBadUrl.disableLogging();
 {testCase}  = require 'nodeunit'
 
 exports.receiveOptoutPost = (test) ->
@@ -56,3 +59,26 @@ exports.receiveOptoutPost = (test) ->
 
     test.done()
 
+exports.connection = (test) ->
+    test.expect 2
+    
+    connectErrMsg = 'getaddrinfo ENOENT'
+    finished = 0
+
+    # Connection Error
+    params1 = 'foo@bar.com'
+    callback1 = (err, res) ->
+        test.equal err, connectErrMsg
+        if finished
+            test.done()
+        finished++
+    SailthruClientBadUrl.getEmail params1, callback1
+
+    # Valid (Default) Connection
+    params2 = 'foo@bar.com'
+    callback2 = (err, res) ->
+        test.notEqual err, connectErrMsg
+        if finished
+            test.done()
+        finished++
+    SailthruClient.getEmail params2, callback2
