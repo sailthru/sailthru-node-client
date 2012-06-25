@@ -15,7 +15,7 @@
     "dependencies": {
         "restler": ">=0.2.3"
     },
-    "dev-dependencies": {
+    "devDependencies": {
         "nodeunit": ">=0.5.0",
         "coffee-script": ">=1.1.1"
     },
