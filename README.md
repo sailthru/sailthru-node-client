@@ -1,7 +1,11 @@
 sailthru-node-client
 ====================
 
-A simple client library to remotely access the `Sailthru REST API` as per [http://docs.sailthru.com/api](http://docs.sailthru.com/api)
+For installation instructions, documentation, and examples please visit:
+[http://getstarted.sailthru.com/developers/api-libraries/node](http://getstarted.sailthru.com/developers/api-libraries/node)
+
+A simple client library to remotely access the `Sailthru REST API` as per [http://getstarted.sailthru.com/developers/api](http://getstarted.sailthru.com/developers/api)
+
 
 By default, it will make request in `JSON` format.
 
@@ -88,7 +92,7 @@ sailthru.apiDelete('send', {send_id: send_id}, function(response, err) {
 });
 ```
 
-### [send](http://docs.sailthru.com/api/send)
+### [send](http://getstarted.sailthru.com/api/send)
 
 ``` js
 //send
