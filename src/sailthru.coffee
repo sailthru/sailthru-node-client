@@ -360,20 +360,6 @@ class SailthruClient
         data.stat = 'blast'
         @stats data, callback
 
-    # horizon API Call
-    getHorizon: (email, callback, hidOnly = false) ->
-        data =
-            email: email
-        data.hid_only = 1 if hidOnly is true
-        @apiGet 'horizon', data, callback
-
-    setHorizon: (email, callback, tags = null) ->
-        data =
-            email: email
-        if tags isnt null
-            data.tags = if tags instanceof Array then tags.join ',' else tags
-        @apiPost 'horizon', data, callback
-
     # Job API Call
     getJobStatus: (jobId, callback) ->
         @apiGet 'job', {'job_id': job_id}, callback
