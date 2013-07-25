@@ -52,7 +52,6 @@ class SailthruRequest
             when 'DELETE'
                 options.path += '?' + query_string
                 options.headers['Content-Length'] = 0
-                options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
             when 'POST'
                 options.headers['Content-Length'] = query_string.length
