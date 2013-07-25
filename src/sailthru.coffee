@@ -47,16 +47,20 @@ class SailthruRequest
         query_string = querystring.stringify data
 
         switch method
-            when 'GET', 'DELETE'
+            when 'GET'
                 options.path += '?' + query_string
-            
+            when 'DELETE'
+                options.path += '?' + query_string
+                options.headers['Content-Length'] = 0
+                options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+
             when 'POST'
                 options.headers['Content-Length'] = query_string.length
                 options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
             else
                 # handle error
-                rerurn false
+                return false
             
         log2 method + ' Request'
             
