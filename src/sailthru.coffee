@@ -3,6 +3,7 @@ https = require 'https'
 url = require 'url'
 querystring = require 'querystring'
 rest = require 'restler'
+fs = require 'fs'
 
 ###
 API client version
@@ -156,7 +157,11 @@ class SailthruClient
     apiPostMultiPart: (action, data, callback, binary_data_params = []) ->
         binary_data = {}
         for param in binary_data_params
-            binary_data[param] = rest.file data[param]
+            stats = fs.statSync(data[param])
+            binary_data[param] = rest.file(
+                                 data[param]
+                                 null
+                                 stats.size)
             delete data[param]
         _url = url.parse @api_url
         json_payload = @_json_payload data
