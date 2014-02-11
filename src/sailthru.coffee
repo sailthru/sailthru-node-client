@@ -3,11 +3,12 @@ https = require 'https'
 url = require 'url'
 querystring = require 'querystring'
 rest = require 'restler'
+fs = require 'fs'
 
 ###
 API client version
 ###
-exports.VERSION = '1.0.7'
+exports.VERSION = '1.0.8'
 
 ###
 LOGGING Flag
@@ -47,16 +48,19 @@ class SailthruRequest
         query_string = querystring.stringify data
 
         switch method
-            when 'GET', 'DELETE'
+            when 'GET'
                 options.path += '?' + query_string
-            
+            when 'DELETE'
+                options.path += '?' + query_string
+                options.headers['Content-Length'] = 0
+
             when 'POST'
                 options.headers['Content-Length'] = query_string.length
                 options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
             else
                 # handle error
-                rerurn false
+                return false
             
         log2 method + ' Request'
             
@@ -153,7 +157,11 @@ class SailthruClient
     apiPostMultiPart: (action, data, callback, binary_data_params = []) ->
         binary_data = {}
         for param in binary_data_params
-            binary_data[param] = rest.file data[param]
+            stats = fs.statSync(data[param])
+            binary_data[param] = rest.file(
+                                 data[param]
+                                 null
+                                 stats.size)
             delete data[param]
         _url = url.parse @api_url
         json_payload = @_json_payload data
@@ -359,20 +367,6 @@ class SailthruClient
         data = @_getOptions options
         data.stat = 'blast'
         @stats data, callback
-
-    # horizon API Call
-    getHorizon: (email, callback, hidOnly = false) ->
-        data =
-            email: email
-        data.hid_only = 1 if hidOnly is true
-        @apiGet 'horizon', data, callback
-
-    setHorizon: (email, callback, tags = null) ->
-        data =
-            email: email
-        if tags isnt null
-            data.tags = if tags instanceof Array then tags.join ',' else tags
-        @apiPost 'horizon', data, callback
 
     # Job API Call
     getJobStatus: (jobId, callback) ->
