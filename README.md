@@ -7,12 +7,24 @@ For installation instructions, documentation, and examples please visit:
 A simple client library to remotely access the `Sailthru REST API` as per [http://getstarted.sailthru.com/developers/api](http://getstarted.sailthru.com/developers/api)
 
 
-By default, it will make request in `JSON` format.
+By default, it will make request in `JSON` format. `XML` format is not supported.
+
+Development
+-----------
+
+```
+npm install # to install dependencies locally
+npm install -g coffee-script # to install coffee-script
+cake test # for running tests
+cake build # for building and generating JavaScript source
+```
 
 Installation
 ------------
 
-### npm install sailthru-client
+```
+npm install sailthru-client
+```
 
 Examples
 --------
