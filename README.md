@@ -17,6 +17,7 @@ npm install # to install dependencies locally
 npm install -g coffee-script # to install coffee-script
 cake test # for running tests
 cake build # for building and generating JavaScript source
+cake watch # for watching file changes
 ```
 
 Installation
