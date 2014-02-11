@@ -68,7 +68,7 @@ exports.connection = (test) ->
     # Connection Error
     params1 = 'foo@bar.com'
     callback1 = (err, res) ->
-        test.equal err, connectErrMsg
+        test.ok err != null, "err exists: " + err 
         if finished
             test.done()
         finished++

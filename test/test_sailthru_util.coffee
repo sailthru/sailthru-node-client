@@ -94,20 +94,14 @@ exports.testMd5 = (test) ->
     test.expect 2
     data1 = 'simple_text'
     hash1 = SailthruUtil.md5 data1
-    cmd1 = "python -c 'import hashlib; print hashlib.md5(\"" + data1 + "\").hexdigest()'"
-    
-    exec1 = exec cmd1, (error, stdout, stderr) ->
-        test.equal stdout.trim(), hash1
-    
-        data2 = "नमस्ते विश्व"
-        hash2 = SailthruUtil.md5 data2
+    expected_hash1_value = 'b7f6e77dceccceaedc3756be73fa5d63'
+    test.equal hash1, expected_hash1_value, "md5 hash for text: '#{data1}'"
 
-        cmd2 = "python -c 'import hashlib; print hashlib.md5(\"" + data2 + "\").hexdigest()'"
-    
-        exec2 = exec cmd2, (error, stdout, stderr) ->
-            test.equal stdout.trim(), hash2
-    
-        exec2.on 'exit', (code) ->
-            test.done()
+    data2 = "नमस्ते विश्व"
+    hash2 = SailthruUtil.md5 data2
+    expected_has2_value = 'a76a7baf44b70ec7b2ab63a71fb0ce8c'
 
+    test.equal hash2, expected_has2_value
+
+    test.done()
 
