@@ -4,5 +4,5 @@
 source code is in the `src/` directory. The `lib/` directory contains the
 compiled JavaScript produced by the build process.
 
-Go to [README](../README.MD) for more info
+Go to [README](../README.md) for more info
 
