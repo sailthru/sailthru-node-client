@@ -65,7 +65,7 @@ sailthru.apiPost('email', data, function(response, err) {
         console.log(response);
     } else {
         console.log('Error!');
-        console.log(err);'
+        console.log(err);
     }
 });
 ```
