@@ -2,9 +2,9 @@ sailthru-node-client
 ====================
 
 For installation instructions, documentation, and examples please visit:
-<http://getstarted.sailthru.com/developers/api-libraries/node>
+<http://getstarted.sailthru.com/new-for-developers-overview/api-client-library/node-js-npm/>
 
-A simple client library to remotely access the `Sailthru REST API` as per <http://getstarted.sailthru.com/developers/api>
+A simple client library to remotely access the `Sailthru REST API` as per <http://getstarted.sailthru.com/new-for-developers-overview/api/api-overview/>
 
 
 By default, it will make request in `JSON` format. `XML` format is not supported.
