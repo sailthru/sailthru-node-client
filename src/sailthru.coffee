@@ -61,9 +61,9 @@ class SailthruRequest
             else
                 # handle error
                 return false
-            
+
         log2 method + ' Request'
-            
+
         req = http_protocol.request options, (res) ->
             body = ''
             res.setEncoding 'utf8'
@@ -107,7 +107,7 @@ class SailthruClient
         @api_url = 'https://api.sailthru.com' if @api_url is false
         @request = new SailthruRequest
 
-    
+
     ###
     prepare JSON payload
     ###
@@ -122,7 +122,7 @@ class SailthruClient
 
     ###
     Unified function for making request to API request
-    Doesn't handle multipart request 
+    Doesn't handle multipart request
     ###
     _apiRequest: (action, data, method, callback) ->
         _url = url.parse @api_url
@@ -255,7 +255,7 @@ class SailthruClient
         data.copy_template = template
         data.list = list
         data.schedule_time = scheduleTime
-        
+
         @apiPost 'blast', data, callback
 
     scheduleBlast: (name, list, scheduleTime, fromName, fromEmail, subject, contentHtml, contentText, callback, options = null) ->
@@ -268,7 +268,7 @@ class SailthruClient
         data.subject = subject
         data.content_html = contentHtml
         data.content_text = contentText
-        
+
         @apiPost 'blast', data, callback
 
     # Template API Call
@@ -298,7 +298,7 @@ class SailthruClient
     deleteTemplate: (template, callback) ->
         @apiDelete 'template', {template: template}, callback
 
-    
+
     # List API Call
     getLists: (callback) ->
         data =
@@ -400,4 +400,3 @@ exports.createSailthruClient = (args...) ->
 
 exports.createClient = (args...) ->
     new SailthruClient args...
-
