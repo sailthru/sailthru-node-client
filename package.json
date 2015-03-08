@@ -19,5 +19,5 @@
         "nodeunit": ">=0.8.4",
         "coffee-script": ">=1.1.1"
     },
-    "engines": {"node": ">=0.4"}
+    "engines": {"node": ">=0.4 <0.12"}
 }
