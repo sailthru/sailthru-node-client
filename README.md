@@ -44,7 +44,7 @@ var apiKey = '******',
 var version = require('sailthru-client').VERSION;
 ```
 
-### Enable / Disable LOgging
+### Enable / Disable Logging
 
 ``` js
 sailthru.enableLogging();
