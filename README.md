@@ -60,7 +60,7 @@ var data = {
         'list-a': 1
     }
 };
-sailthru.apiPost('email', data, function(response, err) {
+sailthru.apiPost('email', data, function(err, response) {
     if (!err) {
         console.log(response);
     } else {
@@ -81,7 +81,7 @@ var data = {
     file: './emails.txt'
 };
 var multipart_params = ['file']; // this is required to mark file as a multipart upload item'
-sailthru.apiPost('job', data, function(response, err) {
+sailthru.apiPost('job', data, function(err, response) {
    console.log(response);
 }, multipart_params);
 ```
@@ -91,7 +91,7 @@ sailthru.apiPost('job', data, function(response, err) {
 ``` js
 // Making /send API GET call
 var send_id = 'TE8EZ3-LmosnAgAA';
-sailthru.apiGet('send', {send_id: send_id}, function(response, err) {
+sailthru.apiGet('send', {send_id: send_id}, function(err, response) {
     console.log(response);
 });
 ```
@@ -100,7 +100,7 @@ sailthru.apiGet('send', {send_id: send_id}, function(response, err) {
 ``` js
 // /send API DELETE call
 var send_id = 'TE8EZ3-LmosnAgAA';
-sailthru.apiDelete('send', {send_id: send_id}, function(response, err) {
+sailthru.apiDelete('send', {send_id: send_id}, function(err, response) {
     console.log(response);
 });
 ```
@@ -121,7 +121,7 @@ var template = 'my-template',
             'replyto': 'praj@infynyxx.com'
         }
     };
-sailthru.send(template, email, function(response, err) {
+sailthru.send(template, email, function(err, response) {
     if (err) {
         console.log("Status Code: " + err.statusCode);
         console.log("Error Code: " + err.error);
@@ -139,7 +139,7 @@ var emails = ['praj@sailthru.com', 'ian@sailthru.com', 'will@sailthru.com'],
             'test': 1
         }
     };
-sailthru.multiSend(template, emails, function(response, err) {
+sailthru.multiSend(template, emails, function(err, response) {
     if (err) {
         //Process error
     } else {

@@ -75,22 +75,22 @@ class SailthruRequest
                 try
                     json_response = JSON.parse body
                     if statusCode is 200
-                        callback json_response
+                        callback null, json_response
                     else
                         json_err =
                             statusCode: statusCode
                             error: json_response.error
                             errormsg: json_response.errormsg
 
-                        callback json_response, json_err
+                        callback json_err, json_response
                 catch error
                     json_err =
                         statusCode: 0,
                         error: 0,
                         errormsg: error.message
-                    callback error.message, json_err
+                    callback json_err, error.message,
         req.on 'error', (err) ->
-            callback err.message, err
+            callback err, err.message
         req.end()
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
 
@@ -177,7 +177,7 @@ class SailthruClient
             'User-Agent': USER_AGENT,
             data: json_payload
         }).on 'complete', (data) ->
-            callback data
+            callback null, data
 
     ###
     DELETE call
