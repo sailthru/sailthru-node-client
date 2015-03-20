@@ -28,6 +28,6 @@ exports.SailthruUtil = class SailthruUtil
             else
                 values = values.concat(SailthruUtil.extractParamValues(v))
         return values
- 
+
 exports.log = (string) ->
     return log 'sailthru-client ' + VERSION + ' - ' + string

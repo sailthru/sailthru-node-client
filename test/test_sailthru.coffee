@@ -61,14 +61,14 @@ exports.receiveOptoutPost = (test) ->
 
 exports.connection = (test) ->
     test.expect 2
-    
+
     connectErrMsg = 'getaddrinfo ENOENT'
     finished = 0
 
     # Connection Error
     params1 = 'foo@bar.com'
     callback1 = (err, res) ->
-        test.ok err != null, "err exists: " + err 
+        test.ok err != null, "err exists: " + err
         if finished
             test.done()
         finished++

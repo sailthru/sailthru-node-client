@@ -104,4 +104,3 @@ exports.testMd5 = (test) ->
     test.equal hash2, expected_has2_value
 
     test.done()
-
