@@ -91,8 +91,8 @@ class SailthruRequest
                     callback error.message, json_err
         req.on 'error', (err) ->
             callback err.message, err
-        req.end()
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
+        req.end()
 
     _api_request: (uri, data, request_method, callback, binary_data_params = []) ->
         return @_http_request uri, data, request_method, callback, binary_data_params
