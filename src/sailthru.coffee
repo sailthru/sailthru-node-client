@@ -431,7 +431,7 @@ class SailthruClient
         data.when = if data.when and type is 'weekly' or type is 'daily' then data.when else delete data.when
         @apiPost 'alert', data, callback
 
-    deleteAler: (email, alertId, callback) ->
+    deleteAlert: (email, alertId, callback) ->
         data =
             email: email
             alert_id: alertId
@@ -476,7 +476,7 @@ class SailthruClient
 
     # Job API Call
     getJobStatus: (jobId, callback) ->
-        @apiGet 'job', {'job_id': job_id}, callback
+        @apiGet 'job', {'job_id': jobId}, callback
 
     processJob: (job, options, report_email, postback_url, binary_data_params, callback) ->
 
