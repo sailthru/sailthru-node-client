@@ -31,7 +31,11 @@ Private class to make HTTP request
 class SailthruRequest
     valid_methods = ['GET', 'POST', 'DELETE']
 
-    _http_request: (uri, data, method, callback, binary_data_params) ->
+    _http_request: (uri, data, method, binary_data_params, callback) ->
+        # support callback function as fourth arg
+        if typeof binary_data_params is 'function'
+            callback = binary_data_params
+            binary_data_params = undefined
         if binary_data_params is undefined
             binary_data_params = []
         parse_uri = url.parse uri
@@ -96,7 +100,11 @@ class SailthruRequest
         req.end()
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
 
-    _api_request: (uri, data, request_method, callback, binary_data_params) ->
+    _api_request: (uri, data, request_method, binary_data_params, callback) ->
+        # support callback function as fourth arg
+        if typeof binary_data_params is 'function'
+            callback = binary_data_params
+            binary_data_params = undefined
         if binary_data_params is undefined
             binary_data_params = []
         return @_http_request uri, data, request_method, callback, binary_data_params
@@ -152,7 +160,11 @@ class SailthruClient
     ###
     POST call
     ###
-    apiPost: (action, data, callback, binary_data_params) ->
+    apiPost: (action, data, binary_data_params, callback) ->
+        # support callback function as third arg
+        if typeof binary_data_params is 'function'
+            callback = binary_data_params
+            binary_data_params = undefined
         if binary_data_params is undefined
             binary_data_params = []
         if binary_data_params.length > 0 then @apiPostMultiPart action, data, callback, binary_data_params else @_apiRequest action, data, 'POST', callback
@@ -160,7 +172,11 @@ class SailthruClient
     ###
     POST call with Multipart
     ###
-    apiPostMultiPart: (action, data, callback, binary_data_params) ->
+    apiPostMultiPart: (action, data, binary_data_params, callback) ->
+        # support callback function as third arg
+        if typeof binary_data_params is 'function'
+            callback = binary_data_params
+            binary_data_params = undefined
         if binary_data_params is undefined
             binary_data_params = []
         binary_data = {}
@@ -203,7 +219,11 @@ class SailthruClient
     getEmail: (email, callback) ->
         @apiGet 'email', {email: email}, callback
 
-    setEmail: (email, callback, options) ->
+    setEmail: (email, options, callback) ->
+        # support callback function as second arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
@@ -211,7 +231,11 @@ class SailthruClient
         @apiPost 'email', data, callback
 
     # Send API Call
-    send: (template, email, callback, options) ->
+    send: (template, email, options, callback) ->
+        # support callback function as third arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
@@ -219,7 +243,11 @@ class SailthruClient
         data.email = email
         @apiPost 'send', data, callback
 
-    multiSend: (template, emails, callback, options) ->
+    multiSend: (template, emails, options, callback) ->
+        # support callback function as third arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
@@ -252,14 +280,22 @@ class SailthruClient
             schedule_time: ''
         @apiPost 'blast', data, callback
 
-    updateBlast: (blastId, callback, options) ->
+    updateBlast: (blastId, options, callback) ->
+        # support callback function as second arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
         data.blast_id = blastId
         @apiPost 'blast', data, callback
 
-    scheduleBlastFromBlast: (blastId, scheduleTime, callback, options) ->
+    scheduleBlastFromBlast: (blastId, scheduleTime, options, callback) ->
+        # support callback function as third arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
@@ -267,7 +303,11 @@ class SailthruClient
         data.schedule_time = scheduleTime
         @apiPost 'blast', data, callback
 
-    scheduleBlastFromTemplate: (blastId, template, list, scheduleTime, callback, options) ->
+    scheduleBlastFromTemplate: (blastId, template, list, scheduleTime, options, callback) ->
+        # support callback function as fifth arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
@@ -278,7 +318,11 @@ class SailthruClient
 
         @apiPost 'blast', data, callback
 
-    scheduleBlast: (name, list, scheduleTime, fromName, fromEmail, subject, contentHtml, contentText, callback, options) ->
+    scheduleBlast: (name, list, scheduleTime, fromName, fromEmail, subject, contentHtml, contentText, options, callback) ->
+        # support callback function as ninth arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
@@ -307,7 +351,11 @@ class SailthruClient
             revision: revisionId
         @apiGet 'template', data, callback
 
-    saveTemplate: (template, callback, options) ->
+    saveTemplate: (template, options, callback) ->
+        # support callback function as second arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
@@ -335,7 +383,11 @@ class SailthruClient
         @apiDelete 'list', data, callback
 
     # Contacts API Call
-    importContacts: (email, password, callback, includeNames) ->
+    importContacts: (email, password, includeNames, callback) ->
+        # support callback function as third arg
+        if typeof includeNames is 'function'
+            callback = includeNames
+            includeNames = undefined
         if includeNames is undefined
             includeNames = true
         data =
@@ -346,7 +398,11 @@ class SailthruClient
         @apiPost 'contacts', data, callback
 
     # Content API Call
-    pushContent: (title, url, callback, options) ->
+    pushContent: (title, url, options, callback) ->
+        # support callback function as third arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
@@ -361,7 +417,11 @@ class SailthruClient
             email: email
         @apiGet 'alert', data, callback
 
-    saveAlert: (email, type, template, callback, options) ->
+    saveAlert: (email, type, template, options, callback) ->
+        # support callback function as fourth arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
@@ -378,7 +438,11 @@ class SailthruClient
         @apiDelete 'alert', data, callback
 
     # purchase API Call
-    purchase: (email, items, callback, options) ->
+    purchase: (email, items, options, callback) ->
+        # support callback function as third arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         data = @_getOptions options
         data.email = email
         data.items = items
@@ -388,14 +452,22 @@ class SailthruClient
     stats: (data, callback) ->
         @apiGet 'stats', data, callback
 
-    statsList: (callback, options) ->
+    statsList: (options, callback) ->
+        # support callback function as first/only arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
         data.stat = 'blast'
         @stats data, callback
 
-    statsBlast: (callback, options) ->
+    statsBlast: (options, callback) ->
+        # support callback function as first/only arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
         if options is undefined
             options = null
         data = @_getOptions options
@@ -406,7 +478,22 @@ class SailthruClient
     getJobStatus: (jobId, callback) ->
         @apiGet 'job', {'job_id': job_id}, callback
 
-    processJob: (job, callback, options, report_email, postback_url, binary_data_params) ->
+    processJob: (job, options, report_email, postback_url, binary_data_params, callback) ->
+
+        # support callback function as second, third, fourth, or fifth arg
+        if typeof options is 'function'
+            callback = options
+            options = undefined
+        else if typeof report_email is 'function'
+            callback = report_email
+            report_email = undefined
+        else if typeof postback_url is 'function'
+            callback = postback_url
+            postback_url = undefined
+        else if typeof binary_data_params is 'function'
+            callback = binary_data_params
+            binary_data_params = undefined
+
         if options is undefined
             options = null
         if report_email is undefined
@@ -415,6 +502,7 @@ class SailthruClient
             postback_url = false
         if binary_data_params is undefined
             binary_data_params = Array
+
         data = @_getOptions options
         data['job'] = job
         data['report_email'] = report_email if report_email isnt false
