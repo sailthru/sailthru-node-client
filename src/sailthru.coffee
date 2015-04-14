@@ -94,7 +94,7 @@ class SailthruRequest
                         statusCode: 0,
                         error: 0,
                         errormsg: error.message
-                    callback json_err, error.message,
+                    callback json_err, error.message
         req.on 'error', (err) ->
             callback err, err.message
         req.end()
