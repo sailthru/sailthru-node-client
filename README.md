@@ -2,10 +2,9 @@ sailthru-node-client
 ====================
 
 For installation instructions, documentation, and examples please visit:
-[http://getstarted.sailthru.com/new-for-developers-overview/api-client-library/node-js-npm](http://getstarted.sailthru.com/new-for-developers-overview/api-client-library/node-js-npm)
+<http://getstarted.sailthru.com/new-for-developers-overview/api-client-library/node-js-npm>
 
-A simple client library to remotely access the `Sailthru REST API` as per [http://getstarted.sailthru.com/developers/api](http://getstarted.sailthru.com/developers/api)
-
+A simple client library to remotely access the `Sailthru REST API` as per <http://getstarted.sailthru.com/new-for-developers-overview/api/api-overview/>
 
 By default, it will make request in `JSON` format. `XML` format is not supported.
 
@@ -44,7 +43,7 @@ var apiKey = '******',
 var version = require('sailthru-client').VERSION;
 ```
 
-### Enable / Disable LOgging
+### Enable / Disable Logging
 
 ``` js
 sailthru.enableLogging();
@@ -60,9 +59,9 @@ var data = {
         'list-a': 1
     }
 };
-sailthru.apiPost('email', data, function(response, err) {
+sailthru.apiPost('email', data, function(err, response) {
     if (!err) {
-        console.log(response);        
+        console.log(response);
     } else {
         console.log('Error!');
         console.log(err);
@@ -81,7 +80,7 @@ var data = {
     file: './emails.txt'
 };
 var multipart_params = ['file']; // this is required to mark file as a multipart upload item'
-sailthru.apiPost('job', data, function(response, err) {
+sailthru.apiPost('job', data, function(err, response) {
    console.log(response);
 }, multipart_params);
 ```
@@ -91,8 +90,8 @@ sailthru.apiPost('job', data, function(response, err) {
 ``` js
 // Making /send API GET call
 var send_id = 'TE8EZ3-LmosnAgAA';
-sailthru.apiGet('send', {send_id: send_id}, function(response, err) {
-    console.log(response);        
+sailthru.apiGet('send', {send_id: send_id}, function(err, response) {
+    console.log(response);
 });
 ```
 
@@ -100,7 +99,7 @@ sailthru.apiGet('send', {send_id: send_id}, function(response, err) {
 ``` js
 // /send API DELETE call
 var send_id = 'TE8EZ3-LmosnAgAA';
-sailthru.apiDelete('send', {send_id: send_id}, function(response, err) {
+sailthru.apiDelete('send', {send_id: send_id}, function(err, response) {
     console.log(response);
 });
 ```
@@ -121,7 +120,7 @@ var template = 'my-template',
             'replyto': 'praj@infynyxx.com'
         }
     };
-sailthru.send(template, email, function(response, err) {
+sailthru.send(template, email, function(err, response) {
     if (err) {
         console.log("Status Code: " + err.statusCode);
         console.log("Error Code: " + err.error);
@@ -139,7 +138,7 @@ var emails = ['praj@sailthru.com', 'ian@sailthru.com', 'will@sailthru.com'],
             'test': 1
         }
     };
-sailthru.multiSend(template, emails, function(response, err) {
+sailthru.multiSend(template, emails, function(err, response) {
     if (err) {
         //Process error
     } else {

@@ -16,10 +16,10 @@ build = (watch, callback) ->
     coffee.on 'exit', (status) ->
         callback?() if status is 0
 
-task 'build', 'Compile CoffeScript source files', ->
+task 'build', 'Compile CoffeeScript source files', ->
     build()
 
-task 'watch', 'Recompile CoffeScript when source files are modified', ->
+task 'watch', 'Recompile CoffeeScript when source files are modified', ->
     build true
 
 task 'test', 'Run the test suite', ->
