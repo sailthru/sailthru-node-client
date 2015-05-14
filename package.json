@@ -1,11 +1,11 @@
 {
     "name": "sailthru-client",
     "description": "Node.js client for Sailthru API",
-    "version": "2.0.0-beta.0",
+    "version": "2.0.0",
     "author": {
-        "name": "Prajwal Tuladhar",
-        "email": "praj@sailthru.com",
-        "url": "http://infynyxx.com"
+        "name": "George Liao",
+        "email": "gliao@sailthru.com",
+        "url": "http://www.sailthru.com"
     },
     "repository": {
         "type": "git",
