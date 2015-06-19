@@ -10,25 +10,15 @@ API client version
 ###
 exports.VERSION = '1.0.8'
 
-###
-LOGGING Flag
-###
-LOGGING = true
-
-USER_AGENT = 'Sailthru API Node/JavaScript Client'
-
 {SailthruUtil, log} = require './sailthru_util'
-
-###
-helper logging function
-###
-log2 = (string) ->
-    log string if LOGGING is true
 
 ###
 Private class to make HTTP request
 ###
 class SailthruRequest
+
+    @user_agent = 'Sailthru API Node/JavaScript Client'
+
     valid_methods = ['GET', 'POST', 'DELETE']
 
     _http_request: (uri, data, method, binary_data_params, callback) ->
@@ -46,7 +36,7 @@ class SailthruRequest
             method: method
             query: data
             headers:
-                'User-Agent': USER_AGENT
+                'User-Agent': @user_agent
                 Host: parse_uri.host
 
         http_protocol = if options.port is 443 then https else http
@@ -120,6 +110,9 @@ class SailthruClient
         @request = new SailthruRequest
 
 
+    log2 = (string) ->
+        log string if @logging is true
+
     ###
     prepare JSON payload
     ###
@@ -142,11 +135,11 @@ class SailthruClient
         return @request._api_request _url.href + action, json_payload, method, callback
 
     enableLogging: ->
-        LOGGING = true
+        @logging = true
         return
 
     disableLogging: ->
-        LOGGING = false
+        @logging = false
         return
 
     # Native API methods: GET< DELETE and POST
@@ -198,7 +191,7 @@ class SailthruClient
 
         rest.post(_url.href + action, {
             multipart: true,
-            'User-Agent': USER_AGENT,
+            'User-Agent': @request.@user_agent,
             data: json_payload
         }).on 'complete', (data) ->
             callback null, data
