@@ -17,9 +17,13 @@ Private class to make HTTP request
 ###
 class SailthruRequest
 
-    @user_agent = 'Sailthru API Node/JavaScript Client'
+    @logging: true # By default enable logging
+    @user_agent: 'Sailthru API Node/JavaScript Client'
 
     valid_methods = ['GET', 'POST', 'DELETE']
+
+    log2: (string) ->
+        log string if @logging is true
 
     _http_request: (uri, data, method, binary_data_params, callback) ->
         # support callback function as fourth arg
@@ -58,13 +62,13 @@ class SailthruRequest
                 # handle error
                 return false
 
-        log2 method + ' Request'
+        @log2 method + ' Request'
 
         req = http_protocol.request options, (res) ->
             body = ''
             res.setEncoding 'utf8'
             statusCode = res.statusCode
-            log2 'Status Code: ' + res.statusCode
+            @log2 'Status Code: ' + res.statusCode
             res.on 'data', (chunk) ->
                 body += chunk
             res.on 'end', ->
@@ -100,17 +104,14 @@ class SailthruRequest
         return @_http_request uri, data, request_method, callback, binary_data_params
 
 class SailthruClient
-    ###
-    By default enable logging
-    ###
-    @logging = true
+    @logging: true # By default enable logging
 
     constructor: (@api_key, @api_secret, @api_url = false) ->
         @api_url = 'https://api.sailthru.com' if @api_url is false
         @request = new SailthruRequest
 
 
-    log2 = (string) ->
+    log2: (string) ->
         log string if @logging is true
 
     ###
@@ -135,10 +136,12 @@ class SailthruClient
         return @request._api_request _url.href + action, json_payload, method, callback
 
     enableLogging: ->
+        @request.logging = true
         @logging = true
         return
 
     disableLogging: ->
+        @request.logging = false
         @logging = false
         return
 
@@ -185,13 +188,13 @@ class SailthruClient
 
         (json_payload[param] = value for param, value of binary_data)
 
-        log2 _url.href + action
-        log2 'MultiPart Request'
-        log2 'JSON Payload: ' + JSON.stringify json_payload
+        @log2 _url.href + action
+        @log2 'MultiPart Request'
+        @log2 'JSON Payload: ' + JSON.stringify json_payload
 
         rest.post(_url.href + action, {
             multipart: true,
-            'User-Agent': @request.@user_agent,
+            'User-Agent': @request.user_agent,
             data: json_payload
         }).on 'complete', (data) ->
             callback null, data
