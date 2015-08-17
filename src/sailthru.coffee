@@ -10,6 +10,8 @@ API client version
 ###
 exports.VERSION = '1.0.8'
 
+USER_AGENT = 'Sailthru API Node/JavaScript Client'
+
 {SailthruUtil, log} = require './sailthru_util'
 
 ###
@@ -18,7 +20,6 @@ Private class to make HTTP request
 class SailthruRequest
 
     @logging: true # By default enable logging
-    @user_agent: 'Sailthru API Node/JavaScript Client'
 
     valid_methods = ['GET', 'POST', 'DELETE']
 
@@ -40,7 +41,7 @@ class SailthruRequest
             method: method
             query: data
             headers:
-                'User-Agent': @user_agent
+                'User-Agent': USER_AGENT
                 Host: parse_uri.host
 
         http_protocol = if options.port is 443 then https else http
@@ -194,7 +195,7 @@ class SailthruClient
 
         rest.post(_url.href + action, {
             multipart: true,
-            'User-Agent': @request.user_agent,
+            'User-Agent': USER_AGENT,
             data: json_payload
         }).on 'complete', (data) ->
             callback null, data
