@@ -165,7 +165,11 @@ class SailthruClient
             binary_data_params = undefined
         if binary_data_params is undefined
             binary_data_params = []
-        if binary_data_params.length > 0 then @apiPostMultiPart action, data, callback, binary_data_params else @_apiRequest action, data, 'POST', callback
+            
+        if binary_data_params.length > 0
+            @apiPostMultiPart action, data, binary_data_params, callback
+        else
+            @_apiRequest action, data, 'POST', callback
 
     ###
     POST call with Multipart
@@ -328,7 +332,7 @@ class SailthruClient
         data.list = list
         data.schedule_time = scheduleTime
         data.from_name = fromName
-        data.from_emai = fromEmail
+        data.from_email = fromEmail
         data.subject = subject
         data.content_html = contentHtml
         data.content_text = contentText
