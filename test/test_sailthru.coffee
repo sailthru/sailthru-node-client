@@ -72,6 +72,7 @@ exports.connection = (test) ->
         if finished
             test.done()
         finished++
+
     SailthruClientBadUrl.getEmail params1, callback1
 
     # Valid (Default) Connection
@@ -81,4 +82,5 @@ exports.connection = (test) ->
         if finished
             test.done()
         finished++
+
     SailthruClient.getEmail params2, callback2
