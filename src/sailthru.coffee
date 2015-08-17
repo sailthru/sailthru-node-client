@@ -65,7 +65,7 @@ class SailthruRequest
 
         @log2 method + ' Request'
 
-        req = http_protocol.request options, (res) ->
+        req = http_protocol.request options, ((res) ->
             body = ''
             res.setEncoding 'utf8'
             statusCode = res.statusCode
@@ -90,6 +90,7 @@ class SailthruRequest
                         error: 0,
                         errormsg: error.message
                     callback json_err, error.message
+        ).bind(this)
         req.on 'error', (err) ->
             callback err, err.message
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
