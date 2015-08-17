@@ -165,7 +165,6 @@ class SailthruClient
             binary_data_params = undefined
         if binary_data_params is undefined
             binary_data_params = []
-            
         if binary_data_params.length > 0
             @apiPostMultiPart action, data, binary_data_params, callback
         else
