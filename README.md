@@ -54,7 +54,7 @@ sailthru.disableLogging();
 
 ``` js
 var data = {
-    email: 'praj@infynyxx.com',
+    email: 'foo@example.com',
     lists: {
         'list-a': 1
     }
@@ -109,15 +109,15 @@ sailthru.apiDelete('send', {send_id: send_id}, function(err, response) {
 ``` js
 //send
 var template = 'my-template',
-    email = 'praj@sailthru.com',
+    email = 'foo@example.com',
     options = {
         'vars': {
-            'name': 'Prajwal Tuladhar',
+            'name': 'Foo Bar',
             'address': 'Queens, NY'
         },
         'options': {
             'test': 1,
-            'replyto': 'praj@infynyxx.com'
+            'replyto': 'bar@example.com'
         }
     };
 sailthru.send(template, email, function(err, response) {
@@ -131,18 +131,18 @@ sailthru.send(template, email, function(err, response) {
 }, options);
 
 //multi-send
-var emails = ['praj@sailthru.com', 'ian@sailthru.com', 'will@sailthru.com'],
+var emails = ['blah@example.com', 'foo@example.com', 'bar@example.com'],
     template = 'multi-template',
     options = {
         'options': {
             'test': 1
         }
     };
-sailthru.multiSend(template, emails, function(err, response) {
+sailthru.multiSend(template, emails, options, function(err, response) {
     if (err) {
         //Process error
     } else {
         //process JSON output
     }
-}, options);
+});
 ```

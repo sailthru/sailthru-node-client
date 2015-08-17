@@ -10,26 +10,21 @@ API client version
 ###
 exports.VERSION = '1.0.8'
 
-###
-LOGGING Flag
-###
-LOGGING = true
-
 USER_AGENT = 'Sailthru API Node/JavaScript Client'
 
 {SailthruUtil, log} = require './sailthru_util'
 
 ###
-helper logging function
-###
-log2 = (string) ->
-    log string if LOGGING is true
-
-###
 Private class to make HTTP request
 ###
 class SailthruRequest
+
+    @logging: true # By default enable logging
+
     valid_methods = ['GET', 'POST', 'DELETE']
+
+    log2: (string) ->
+        log string if @logging is true
 
     _http_request: (uri, data, method, binary_data_params, callback) ->
         # support callback function as fourth arg
@@ -68,13 +63,13 @@ class SailthruRequest
                 # handle error
                 return false
 
-        log2 method + ' Request'
+        @log2 method + ' Request'
 
-        req = http_protocol.request options, (res) ->
+        req = http_protocol.request options, ((res) ->
             body = ''
             res.setEncoding 'utf8'
             statusCode = res.statusCode
-            log2 'Status Code: ' + res.statusCode
+            @log2 'Status Code: ' + res.statusCode
             res.on 'data', (chunk) ->
                 body += chunk
             res.on 'end', ->
@@ -95,6 +90,7 @@ class SailthruRequest
                         error: 0,
                         errormsg: error.message
                     callback json_err, error.message
+        ).bind(this)
         req.on 'error', (err) ->
             callback err, err.message
         req.write url.format({query: options.query}).replace('?', ''), 'utf8' if method is 'POST'
@@ -110,15 +106,15 @@ class SailthruRequest
         return @_http_request uri, data, request_method, callback, binary_data_params
 
 class SailthruClient
-    ###
-    By default enable logging
-    ###
-    @logging = true
+    @logging: true # By default enable logging
 
     constructor: (@api_key, @api_secret, @api_url = false) ->
         @api_url = 'https://api.sailthru.com' if @api_url is false
         @request = new SailthruRequest
 
+
+    log2: (string) ->
+        log string if @logging is true
 
     ###
     prepare JSON payload
@@ -142,11 +138,13 @@ class SailthruClient
         return @request._api_request _url.href + action, json_payload, method, callback
 
     enableLogging: ->
-        LOGGING = true
+        @request.logging = true
+        @logging = true
         return
 
     disableLogging: ->
-        LOGGING = false
+        @request.logging = false
+        @logging = false
         return
 
     # Native API methods: GET< DELETE and POST
@@ -167,7 +165,10 @@ class SailthruClient
             binary_data_params = undefined
         if binary_data_params is undefined
             binary_data_params = []
-        if binary_data_params.length > 0 then @apiPostMultiPart action, data, callback, binary_data_params else @_apiRequest action, data, 'POST', callback
+        if binary_data_params.length > 0
+            @apiPostMultiPart action, data, binary_data_params, callback
+        else
+            @_apiRequest action, data, 'POST', callback
 
     ###
     POST call with Multipart
@@ -192,9 +193,9 @@ class SailthruClient
 
         (json_payload[param] = value for param, value of binary_data)
 
-        log2 _url.href + action
-        log2 'MultiPart Request'
-        log2 'JSON Payload: ' + JSON.stringify json_payload
+        @log2 _url.href + action
+        @log2 'MultiPart Request'
+        @log2 'JSON Payload: ' + JSON.stringify json_payload
 
         rest.post(_url.href + action, {
             multipart: true,
@@ -330,7 +331,7 @@ class SailthruClient
         data.list = list
         data.schedule_time = scheduleTime
         data.from_name = fromName
-        data.from_emai = fromEmail
+        data.from_email = fromEmail
         data.subject = subject
         data.content_html = contentHtml
         data.content_text = contentText
