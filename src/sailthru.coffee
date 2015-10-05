@@ -36,7 +36,7 @@ class SailthruRequest
         parse_uri = url.parse uri
         options =
             host: parse_uri.hostname
-            port: parse_uri.port !== undefined ? parse_uri.port : (parse_uri.protocol === 'https:' ? 443 : 80)
+            port: if parse_uri.port isnt undefined then parse_uri.port else (if parse_uri.protocol is 'https:' then 443 else 80)
             path: parse_uri.pathname
             method: method
             query: data
