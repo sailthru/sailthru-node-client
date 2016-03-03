@@ -80,9 +80,9 @@ var data = {
     file: './emails.txt'
 };
 var multipart_params = ['file']; // this is required to mark file as a multipart upload item'
-sailthru.apiPost('job', data, function(err, response) {
+sailthru.apiPost('job', data, multipart_params, function(err, response) {
    console.log(response);
-}, multipart_params);
+});
 ```
 
 
