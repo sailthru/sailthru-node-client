@@ -53,7 +53,7 @@
     };
     real6 = SailthruClient.receiveOptoutPost(params6);
     test.ok(!real6);
-    params7 = void 0;
+    params7 = undefined;
     real7 = SailthruClient.receiveOptoutPost(params7);
     test.ok(!real7);
     return test.done();
