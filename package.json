@@ -1,23 +1,26 @@
 {
-    "name": "sailthru-client",
-    "description": "Node.js client for Sailthru API",
-    "version": "2.0.3",
-    "author": {
-        "name": "George Liao",
-        "email": "gliao@sailthru.com",
-        "url": "http://www.sailthru.com"
-    },
-    "repository": {
-        "type": "git",
-        "url": "http://github.com/sailthru/sailthru-node-client.git"
-    },
-    "main": "./lib/sailthru.js",
-    "dependencies": {
-        "restler": ">=0.2.3"
-    },
-    "devDependencies": {
-        "nodeunit": ">=0.8.4",
-        "coffee-script": ">=1.1.1"
-    },
-    "engines": {"node": ">=0.4"}
+  "name": "sailthru-client",
+  "description": "Node.js client for Sailthru API",
+  "version": "2.1.0",
+  "author": {
+    "name": "George Liao",
+    "email": "gliao@sailthru.com",
+    "url": "http://www.sailthru.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/sailthru/sailthru-node-client.git"
+  },
+  "main": "./lib/sailthru.js",
+  "dependencies": {
+    "restler": ">=0.2.3"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-nodeunit": "^1.0.0",
+    "nodeunit": ">=0.8.4"
+  },
+  "engines": {
+    "node": ">=0.4"
+  }
 }
