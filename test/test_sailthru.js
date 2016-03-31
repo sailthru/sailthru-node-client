@@ -3,13 +3,18 @@
       SailthruClientBadUrl = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', 'http://foo'),
       nock = require('nock');
 
-  nock.disableNetConnect();
-  nock('http://api.sailthru.com')
-    .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
-    .get(/^\/email/).reply(404, {errormsg: 'Not Found'});
-
   SailthruClient.disableLogging();
   SailthruClientBadUrl.disableLogging();
+
+  exports.setUp = function(cb) {
+    nock.disableNetConnect();
+    nock('http://api.sailthru.com')
+      .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
+      .post(/^\/user/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 2400, 'X-Rate-Limit-Remaining': 2399, 'X-Rate-Limit-Reset': 1459382280})
+      .get(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 18000, 'X-Rate-Limit-Remaining': 17999, 'X-Rate-Limit-Reset': 1459382280})
+      .get(/^\/email/).reply(404, {errormsg: 'Not Found'});
+    cb();
+  };
 
   exports.receiveOptoutPost = function(test) {
     var params1, params2, params3, params4, params5, params6, params7, real1, real2, real3, real4, real5, real6, real7;
@@ -96,7 +101,7 @@
     SailthruClient.getEmail(params2, callback2);
   };
 
-  exports.getLastRateLimitInfo = function(test) {
+  exports.getLastRateLimitInfoSingleCase = function(test) {
     test.expect(4);
     SailthruClient.apiPost('send', {email: 'abc@example.com', 'template': 'my template'}, function(err, response) {
       test.ok(!err);
@@ -115,7 +120,58 @@
 
       test.done();
     });
+  };
 
+  exports.getLastRateLimitInfoMultiCase = function(test) {
+    test.expect(4);
+    SailthruClient.apiPost('send', {email: 'abc@example.com', 'template': 'my template'}, function(err, response) {
+      test.ok(!err);
+      test.deepEqual(response, {ok: true});
+
+      var rateLimitInfo = SailthruClient.getLastRateLimitInfo('send', 'POST');
+      test.deepEqual(rateLimitInfo, {
+        limit: 1234,
+        remaining: 1230,
+        reset: 1459382280
+      });
+
+      SailthruClient.apiGet('send', {send_id: 'blah'}, function(err, response) {
+        rateLimitInfo = SailthruClient.getLastRateLimitInfo('send', 'GET');
+        test.deepEqual(rateLimitInfo, {
+          limit: 18000,
+          remaining: 17999,
+          reset: 1459382280
+        });
+
+        test.done();
+      });
+    });
+  };
+
+  exports.getLastRateLimitInfoMultiCase = function(test) {
+    test.expect(4);
+    SailthruClient.apiPost('send', {email: 'abc@example.com', 'template': 'my template'}, function(err, response) {
+      test.ok(!err);
+      test.deepEqual(response, {ok: true});
+
+      var rateLimitInfo = SailthruClient.getLastRateLimitInfo('send', 'POST');
+      test.deepEqual(rateLimitInfo, {
+        limit: 1234,
+        remaining: 1230,
+        reset: 1459382280
+      });
+
+      SailthruClient.apiPost('user', {id: 'blah@example.com'}, function(err, response) {
+        rateLimitInfo = SailthruClient.getLastRateLimitInfo('user', 'post');
+        test.deepEqual(rateLimitInfo, {
+          limit: 2400,
+          remaining: 2399,
+          reset: 1459382280
+        });
+
+        test.done();
+      });
+    });
   };
 
 }).call(this);
