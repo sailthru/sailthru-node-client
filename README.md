@@ -109,7 +109,7 @@ var template = 'my-template',
             'replyto': 'bar@example.com'
         }
     };
-sailthru.send(template, email, function(err, response) {
+sailthru.send(template, email, options, function(err, response) {
     if (err) {
         console.log("Status Code: " + err.statusCode);
         console.log("Error Code: " + err.error);
@@ -117,7 +117,7 @@ sailthru.send(template, email, function(err, response) {
     } else {
         //process output
     }
-}, options);
+});
 
 //multi-send
 var emails = ['blah@example.com', 'foo@example.com', 'bar@example.com'],
