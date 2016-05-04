@@ -8,22 +8,11 @@ A simple client library to remotely access the `Sailthru REST API` as per <http:
 
 By default, it will make request in `JSON` format. `XML` format is not supported.
 
-Development
------------
-
-```
-npm install # to install dependencies locally
-npm install -g coffee-script # to install coffee-script
-cake test # for running tests
-cake build # for building and generating JavaScript source
-cake watch # for watching file changes
-```
-
 Installation
 ------------
 
 ```
-npm install sailthru-client
+npm install sailthru-client --save
 ```
 
 Examples
@@ -145,4 +134,42 @@ sailthru.multiSend(template, emails, options, function(err, response) {
         //process JSON output
     }
 });
+```
+
+### Rate Limit Information
+
+The library allows inspection of the 'X-Rate-Limit-*' headers returned by the Sailthru API. The `getLastRateLimitInfo(action, method)` function allows you to retrieve the last known rate limit information for the given action / method combination. It must follow an API call. For example, if you do a `/send POST`, you can follow up with a call to `getLastRateLimitInfo('send', 'POST')` as shown below:
+
+``` js
+// make API call as normal
+sailthru.apiPost('send', {'template': 'my template', 'email': 'foo@example.com'}, function(err, response) {
+    if (!err) {
+        console.log(response);
+    } else {
+        console.log('Error!');
+        console.log(err);
+    }
+});
+
+// check rate limit information
+var rateLimitInfo = sailthru.getLastRateLimitInfo('send', 'POST');
+```
+
+The return type will be `undefined` if there is no rate limit information for the given action / method combination (e.g. if you have not yet made a request to that endpoint). Otherwise, it will be an object in the following format:
+
+``` js
+{
+    limit: 1234, // <Number representing the limit of requests/minute for this action / method combination>
+    remaining: 1230, // <Number representing how many requests remain in the current minute>
+    reset: 1459381680 // <Number representing the UNIX epoch timestamp of when the next minute starts, and when the rate limit resets>
+}
+```
+
+Development
+-----------
+
+```
+npm install -g grunt-cli
+npm install # to install dependencies locally
+grunt # for running tests
 ```
