@@ -1,7 +1,7 @@
 {
   "name": "sailthru-client",
   "description": "Node.js client for Sailthru API",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "author": {
     "name": "George Liao",
     "email": "gliao@sailthru.com",

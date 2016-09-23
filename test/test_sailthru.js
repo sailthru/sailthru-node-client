@@ -8,11 +8,6 @@
 
   exports.setUp = function(cb) {
     nock.disableNetConnect();
-    nock('http://api.sailthru.com')
-      .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
-      .post(/^\/user/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 2400, 'X-Rate-Limit-Remaining': 2399, 'X-Rate-Limit-Reset': 1459382280})
-      .get(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 18000, 'X-Rate-Limit-Remaining': 17999, 'X-Rate-Limit-Reset': 1459382280})
-      .get(/^\/email/).reply(404, {errormsg: 'Not Found'});
     cb();
   };
 
@@ -72,6 +67,9 @@
   };
 
   exports.connection = function(test) {
+    nock('http://api.sailthru.com')
+      .get(/^\/list/).reply(404, {errormsg: 'Not Found'});
+
     var callback1, callback2, connectErrMsg, finished, params1, params2;
 
     test.expect(3);
@@ -86,7 +84,7 @@
       }
       return finished++;
     };
-    SailthruClientBadUrl.getEmail(params1, callback1);
+    SailthruClientBadUrl.getLists(callback1);
 
     // Using real URL
     params2 = 'foo@bar.com';
@@ -98,10 +96,84 @@
       }
       return finished++;
     };
-    SailthruClient.getEmail(params2, callback2);
+    SailthruClient.getLists(callback2);
+  };
+
+  exports.getUserBySidWithEmail = function(test) {
+    nock('http://api.sailthru.com')
+      .get(/^\/user/)
+      .query(function(q) {
+        var data = JSON.parse(q.json);
+        return data.id == 'email@test.com';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.getUserBySid('email@test.com', callback);
+  };
+
+  exports.getUserBySidWithSid = function(test) {
+    nock('http://api.sailthru.com')
+      .get(/^\/user/)
+      .query(function(q) {
+        var data = JSON.parse(q.json);
+        return data.id == '57e54ddc83ba8895008b4567';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.getUserBySid('57e54ddc83ba8895008b4567', callback);
+  };
+
+  exports.getUserByKeyWithEmailAndNoFields = function(test) {
+    nock('http://api.sailthru.com')
+      .get(/^\/user/)
+      .query(function(q) {
+        var data = JSON.parse(q.json);
+        return data.id == 'test@example.com' && data.key == 'email';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.getUserByKey('test@example.com', 'email', callback);
+  };
+
+  exports.getUserByKeyWithEmailAndFields = function(test) {
+    nock('http://api.sailthru.com')
+      .get(/^\/user/)
+      .query(function(q) {
+        var data = JSON.parse(q.json);
+        return data.id == 'test@example.com' && data.key == 'email'
+          && data.fields.lists == 1;
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.getUserByKey('test@example.com', 'email', {lists: 1}, callback);
   };
 
   exports.getLastRateLimitInfoSingleCase = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
+      .post(/^\/user/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 2400, 'X-Rate-Limit-Remaining': 2399, 'X-Rate-Limit-Reset': 1459382280})
+      .get(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 18000, 'X-Rate-Limit-Remaining': 17999, 'X-Rate-Limit-Reset': 1459382280});
+
     test.expect(4);
     SailthruClient.apiPost('send', {email: 'abc@example.com', 'template': 'my template'}, function(err, response) {
       test.ok(!err);
@@ -123,6 +195,11 @@
   };
 
   exports.getLastRateLimitInfoMultiCase = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
+      .post(/^\/user/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 2400, 'X-Rate-Limit-Remaining': 2399, 'X-Rate-Limit-Reset': 1459382280})
+      .get(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 18000, 'X-Rate-Limit-Remaining': 17999, 'X-Rate-Limit-Reset': 1459382280});
+
     test.expect(4);
     SailthruClient.apiPost('send', {email: 'abc@example.com', 'template': 'my template'}, function(err, response) {
       test.ok(!err);
@@ -149,6 +226,11 @@
   };
 
   exports.getLastRateLimitInfoMultiCase = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
+      .post(/^\/user/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 2400, 'X-Rate-Limit-Remaining': 2399, 'X-Rate-Limit-Reset': 1459382280})
+      .get(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 18000, 'X-Rate-Limit-Remaining': 17999, 'X-Rate-Limit-Reset': 1459382280});
+
     test.expect(4);
     SailthruClient.apiPost('send', {email: 'abc@example.com', 'template': 'my template'}, function(err, response) {
       test.ok(!err);
