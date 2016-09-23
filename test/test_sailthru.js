@@ -168,6 +168,120 @@
     SailthruClient.getUserByKey('test@example.com', 'email', {lists: 1}, callback);
   };
 
+  exports.statsBlast = function(test) {
+    nock('http://api.sailthru.com')
+      .get(/^\/stats/)
+      .query(function(q) {
+        var data = JSON.parse(q.json);
+        return data.stat == 'blast';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.statsBlast({}, callback);
+  };
+
+  exports.statsList = function(test) {
+    nock('http://api.sailthru.com')
+      .get(/^\/stats/)
+      .query(function(q) {
+        var data = JSON.parse(q.json);
+        return data.stat == 'list';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.statsList({}, callback);
+  };
+
+  exports.saveTemplate = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/template/, function(q) {
+        var data = JSON.parse(q.json);
+        return data.template == 'example';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.saveTemplate('example', callback);
+  };
+
+  exports.saveTemplateFromRevision = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/template/, function(q) {
+        var data = JSON.parse(q.json);
+        return data.template == 'example' && data.revision == 1234;
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.saveTemplateFromRevision('example', 1234, callback);
+  };
+
+  exports.unscheduleBlast = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/blast/, function(q) {
+        var data = JSON.parse(q.json);
+        return data.blast_id == 1234 && data.schedule_time == '' && data.status == 'draft';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.unscheduleBlast(1234, callback);
+  };
+
+  exports.pauseBlast = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/blast/, function(q) {
+        var data = JSON.parse(q.json);
+        return data.blast_id == 1234 && data.paused == true;
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.pauseBlast(1234, callback);
+  };
+
+  exports.pauseBlast = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/blast/, function(q) {
+        var data = JSON.parse(q.json);
+        return data.blast_id == 1234 && data.paused == false;
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.resumeBlast(1234, callback);
+  };
+
   exports.getLastRateLimitInfoSingleCase = function(test) {
     nock('http://api.sailthru.com')
       .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
