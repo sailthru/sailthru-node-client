@@ -284,9 +284,7 @@
 
   exports.getLastRateLimitInfoSingleCase = function(test) {
     nock('http://api.sailthru.com')
-      .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
-      .post(/^\/user/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 2400, 'X-Rate-Limit-Remaining': 2399, 'X-Rate-Limit-Reset': 1459382280})
-      .get(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 18000, 'X-Rate-Limit-Remaining': 17999, 'X-Rate-Limit-Reset': 1459382280});
+      .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280});
 
     test.expect(4);
     SailthruClient.apiPost('send', {email: 'abc@example.com', 'template': 'my template'}, function(err, response) {
@@ -311,7 +309,6 @@
   exports.getLastRateLimitInfoMultiCase = function(test) {
     nock('http://api.sailthru.com')
       .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
-      .post(/^\/user/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 2400, 'X-Rate-Limit-Remaining': 2399, 'X-Rate-Limit-Reset': 1459382280})
       .get(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 18000, 'X-Rate-Limit-Remaining': 17999, 'X-Rate-Limit-Reset': 1459382280});
 
     test.expect(4);
@@ -342,8 +339,7 @@
   exports.getLastRateLimitInfoMultiCase = function(test) {
     nock('http://api.sailthru.com')
       .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
-      .post(/^\/user/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 2400, 'X-Rate-Limit-Remaining': 2399, 'X-Rate-Limit-Reset': 1459382280})
-      .get(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 18000, 'X-Rate-Limit-Remaining': 17999, 'X-Rate-Limit-Reset': 1459382280});
+      .post(/^\/user/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 2400, 'X-Rate-Limit-Remaining': 2399, 'X-Rate-Limit-Reset': 1459382280});
 
     test.expect(4);
     SailthruClient.apiPost('send', {email: 'abc@example.com', 'template': 'my template'}, function(err, response) {
