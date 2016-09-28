@@ -282,6 +282,22 @@
     SailthruClient.resumeBlast(1234, callback);
   };
 
+  exports.cancelBlast = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/blast/, function(q) {
+        var data = JSON.parse(q.json);
+        return data.blast_id == 1234 && data.status == 'sent';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.cancelBlast(1234, callback);
+  };
+
   exports.getLastRateLimitInfoSingleCase = function(test) {
     nock('http://api.sailthru.com')
       .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280});
