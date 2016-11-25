@@ -1,6 +1,5 @@
 (function() {
   var mock = require('mock-require');
-  var mockFsDone = false;
   mock('fs', {
     statSync: function() {return {size: 2}; },
     open: function(a,b,c,cb) { cb(); },
