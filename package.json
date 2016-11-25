@@ -1,7 +1,7 @@
 {
   "name": "sailthru-client",
   "description": "Node.js client for Sailthru API",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "author": {
     "name": "George Liao",
     "email": "gliao@sailthru.com",
@@ -13,15 +13,18 @@
   },
   "main": "./lib/sailthru.js",
   "dependencies": {
-    "restler": ">=0.2.3"
+    "graceful-fs": "^4.1.11",
+    "restler": "^3.4.0"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
+    "grunt": "^1.0.1",
     "grunt-contrib-nodeunit": "^1.0.0",
-    "nock": "^7.7.2",
-    "nodeunit": ">=0.8.4"
+    "mock-require": "^2.0.0",
+    "nock": "^9.0.2",
+    "nodeunit": "^0.10.2"
   },
   "engines": {
     "node": ">=0.4"
-  }
+  },
+  "license": "MIT"
 }

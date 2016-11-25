@@ -1,13 +1,26 @@
 (function() {
+  var mock = require('mock-require');
+  var mockFsDone = false;
+  mock('fs', {
+    statSync: function() {return {size: 2}; },
+    open: function(a,b,c,cb) { cb(); },
+    read: function(a,b,c,d,cb){ cb(); },
+    close: function() {}
+  });
+
   var SailthruClient = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty'),
-      SailthruClientBadUrl = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', 'http://foo'),
-      nock = require('nock');
+    SailthruClientBadUrl = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', 'http://foo'),
+    nock = require('nock');
 
   SailthruClient.disableLogging();
   SailthruClientBadUrl.disableLogging();
 
   exports.setUp = function(cb) {
     nock.disableNetConnect();
+    cb();
+  };
+
+  exports.tearDown = function(cb) {
     cb();
   };
 
@@ -296,6 +309,83 @@
       test.done();
     };
     SailthruClient.cancelBlast(1234, callback);
+  };
+
+  exports.processJobNormalCall = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/job/, function(q) {
+        var data = JSON.parse(q.json);
+        return data.job === 'import' && data.list === 'abc';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    var options = {
+      list: 'abc'
+    };
+    SailthruClient.processJob('import', options, callback);
+  };
+
+  exports.processJobWithReportEmail = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/job/, function(q) {
+        var data = JSON.parse(q.json);
+        return data.job === 'import' && data.list === 'abc' && data.report_email === 'report@example.com';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    var options = {
+      list: 'abc'
+    };
+    SailthruClient.processJob('import', options, 'report@example.com', callback);
+  };
+
+  exports.processJobWithReportEmailAndPostback = function(test) {
+    nock('http://api.sailthru.com')
+      .post(/^\/job/, function(q) {
+        var data = JSON.parse(q.json);
+        return data.job === 'import' && data.list === 'abc' && data.report_email === 'report@example.com'
+          && data.postback_url === 'http://example.com/post.php';
+      }).reply(200, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    var options = {
+      list: 'abc'
+    };
+    SailthruClient.processJob('import', options, 'report@example.com', 'http://example.com/post.php', callback);
+  };
+
+  exports.processJobWithFile = function(test) {
+    nock(/.*sailthru.com.*/)
+      .post(/.*/, function(q) {
+        return q.match(/new_users.csv/);
+      }).reply(200, 'success');
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    var options = {
+      list: 'abc',
+      file: 'tmp/new_users.csv'
+    };
+    SailthruClient.processJob('import', options, 'report@example.com', 'http://example.com/post.php', ['file'], callback);
   };
 
   exports.getLastRateLimitInfoSingleCase = function(test) {
