@@ -79,7 +79,7 @@
   };
 
   exports.connection = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .get(/^\/list/).reply(404, {errormsg: 'Not Found'});
 
     var callback1, callback2, connectErrMsg, finished, params1, params2;
@@ -111,8 +111,65 @@
     SailthruClient.getLists(callback2);
   };
 
+  var verifyPortProtocolLeadsToExpectedHTTPCall = function(api_url, expected_url, test) {
+    var SailthruClientLocal = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', api_url);
+    SailthruClientLocal.disableLogging();
+    nock(expected_url).get(/^\/list/).reply(200, {});
+    test.expect(1);
+    SailthruClientLocal.getLists(function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    });
+  };
+
+  exports.noUrlShouldDefaultToSailthruProduction = function(test) {
+    // no URL at all should use https://api.sailthru.com
+    verifyPortProtocolLeadsToExpectedHTTPCall(undefined, 'https://api.sailthru.com', test);
+  };
+
+  exports.portAndProtocolOptionsNoPortNoProtocol = function(test) {
+    // no port and no protocol should use https://api.sailthru.com
+    verifyPortProtocolLeadsToExpectedHTTPCall('api.sailthru.com', 'https://api.sailthru.com', test);
+  };
+
+  exports.portAndProtocolOptionsNoPortHttpProtocol = function(test) {
+    // no port and http protocol should use http://api.sailthru.com
+    verifyPortProtocolLeadsToExpectedHTTPCall('http://api.sailthru.com', 'http://api.sailthru.com', test);
+  };
+
+  exports.portAndProtocolOptionsOverridePortHttpProtocol = function(test) {
+    // non-standard port and http protocol should use http://api.sailthru.com:<port>
+    verifyPortProtocolLeadsToExpectedHTTPCall('http://api.sailthru.com:8080', 'http://api.sailthru.com:8080', test);
+  };
+
+  exports.portAndProtocolOptionsNoPortHttpsProtocol = function(test) {
+    // no port and https protocol should use https://api.sailthru.com
+    verifyPortProtocolLeadsToExpectedHTTPCall('https://api.sailthru.com', 'https://api.sailthru.com', test);
+  };
+
+  exports.portAndProtocolOptionsOverridePortHttpsProtocol = function(test) {
+    // non-standard port and https protocol should use https://api.sailthru.com:<port>
+    verifyPortProtocolLeadsToExpectedHTTPCall('https://api.sailthru.com:4343', 'https://api.sailthru.com:4343', test);
+  };
+
+  exports.portAndProtocolOptionsPortWithoutProtocol = function(test) {
+    // API client does not support specifying port without protocol, so expect Error
+    test.throws(function() {
+        require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', 'api.sailthru.com:80');
+    }, Error);
+    test.done();
+  };
+
+  exports.portAndProtocolOptionsInvalidProtocol = function(test) {
+    // API client does not support protocols other than HTTP and HTTPS
+    test.throws(function() {
+        require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', 'ftp://api.sailthru.com');
+    }, Error);
+    test.done();
+  };
+
   exports.getUserBySidWithEmail = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .get(/^\/user/)
       .query(function(q) {
         var data = JSON.parse(q.json);
@@ -129,7 +186,7 @@
   };
 
   exports.getUserBySidWithSid = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .get(/^\/user/)
       .query(function(q) {
         var data = JSON.parse(q.json);
@@ -146,7 +203,7 @@
   };
 
   exports.getUserByKeyWithEmailAndNoFields = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .get(/^\/user/)
       .query(function(q) {
         var data = JSON.parse(q.json);
@@ -163,7 +220,7 @@
   };
 
   exports.getUserByKeyWithEmailAndFields = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .get(/^\/user/)
       .query(function(q) {
         var data = JSON.parse(q.json);
@@ -181,7 +238,7 @@
   };
 
   exports.statsBlast = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .get(/^\/stats/)
       .query(function(q) {
         var data = JSON.parse(q.json);
@@ -198,7 +255,7 @@
   };
 
   exports.statsList = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .get(/^\/stats/)
       .query(function(q) {
         var data = JSON.parse(q.json);
@@ -215,7 +272,7 @@
   };
 
   exports.saveTemplate = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/template/, function(q) {
         var data = JSON.parse(q.json);
         return data.template == 'example';
@@ -231,7 +288,7 @@
   };
 
   exports.saveTemplateFromRevision = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/template/, function(q) {
         var data = JSON.parse(q.json);
         return data.template == 'example' && data.revision == 1234;
@@ -247,7 +304,7 @@
   };
 
   exports.unscheduleBlast = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/blast/, function(q) {
         var data = JSON.parse(q.json);
         return data.blast_id == 1234 && data.schedule_time == '' && data.status == 'draft';
@@ -263,7 +320,7 @@
   };
 
   exports.pauseBlast = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/blast/, function(q) {
         var data = JSON.parse(q.json);
         return data.blast_id == 1234 && data.paused == true;
@@ -279,7 +336,7 @@
   };
 
   exports.pauseBlast = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/blast/, function(q) {
         var data = JSON.parse(q.json);
         return data.blast_id == 1234 && data.paused == false;
@@ -295,7 +352,7 @@
   };
 
   exports.cancelBlast = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/blast/, function(q) {
         var data = JSON.parse(q.json);
         return data.blast_id == 1234 && data.status == 'sent';
@@ -311,7 +368,7 @@
   };
 
   exports.processJobNormalCall = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/job/, function(q) {
         var data = JSON.parse(q.json);
         return data.job === 'import' && data.list === 'abc';
@@ -330,7 +387,7 @@
   };
 
   exports.processJobWithReportEmail = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/job/, function(q) {
         var data = JSON.parse(q.json);
         return data.job === 'import' && data.list === 'abc' && data.report_email === 'report@example.com';
@@ -349,7 +406,7 @@
   };
 
   exports.processJobWithReportEmailAndPostback = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/job/, function(q) {
         var data = JSON.parse(q.json);
         return data.job === 'import' && data.list === 'abc' && data.report_email === 'report@example.com'
@@ -388,7 +445,7 @@
   };
 
   exports.getLastRateLimitInfoSingleCase = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280});
 
     test.expect(4);
@@ -412,7 +469,7 @@
   };
 
   exports.getLastRateLimitInfoMultiCase = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
       .get(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 18000, 'X-Rate-Limit-Remaining': 17999, 'X-Rate-Limit-Reset': 1459382280});
 
@@ -442,7 +499,7 @@
   };
 
   exports.getLastRateLimitInfoMultiCase = function(test) {
-    nock('http://api.sailthru.com')
+    nock('https://api.sailthru.com')
       .post(/^\/send/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 1234, 'X-Rate-Limit-Remaining': 1230, 'X-Rate-Limit-Reset': 1459382280})
       .post(/^\/user/).reply(200, {ok: true}, {'X-Rate-Limit-Limit': 2400, 'X-Rate-Limit-Remaining': 2399, 'X-Rate-Limit-Reset': 1459382280});
 
