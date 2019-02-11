@@ -13,7 +13,7 @@
   },
   "main": "./lib/sailthru.js",
   "dependencies": {
-    "restler": "^3.4.0"
+    "restler-base": "^3.4.6"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
