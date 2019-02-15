@@ -2,7 +2,7 @@
   var mock = require('mock-require');
   mock('fs', {
     statSync: function() { return {size: 2}; },
-    fstatSync: function() { return {size: 8675309}; },
+    fstatSync: function() { return {size: 1024}; },
     open: function(a,b,cb) { cb(); },
     read: function(a,b,c,d,e,cb) { cb(null, null, b); },
     close: function() {}
