@@ -13,6 +13,7 @@
   },
   "main": "./lib/sailthru.js",
   "dependencies": {
+    "proxy-agent": "^3.1.0",
     "restler-base": "^3.4.6"
   },
   "devDependencies": {
