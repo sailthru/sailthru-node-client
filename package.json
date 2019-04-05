@@ -1,7 +1,7 @@
 {
   "name": "sailthru-client",
   "description": "Node.js client for Sailthru API",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "author": {
     "name": "George Liao",
     "email": "gliao@sailthru.com",
@@ -13,6 +13,8 @@
   },
   "main": "./lib/sailthru.js",
   "dependencies": {
+    "grunt-cli": "^1.3.2",
+    "proxy-agent": "^3.1.0",
     "restler-base": "^3.4.6"
   },
   "devDependencies": {
