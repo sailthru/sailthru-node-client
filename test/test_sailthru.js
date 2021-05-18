@@ -586,5 +586,46 @@
     });
   };
 
+  // ensure we will correctly handle 201 and 204 responses
+  exports.saveWatch = function(test) {
+    const watchData = { 
+      profile_id: '12345', 
+      watch: { 
+        interest_type: 'wishlist', 
+        query: { content_id: '67890' },
+      },
+    }
+
+    nock('https://api.sailthru.com')
+      .post(/^\/content\/watch/, function (q) {
+        var data = JSON.parse(q.json);
+        test.deepEqual(data, watchData);
+        return true;
+      })
+      .reply(201, {/* don't care about response */});
+
+    test.expect(2);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.apiPost('content/watch', watchData, callback);
+  };
+
+  exports.deleteWatch = function(test) {
+    nock('https://api.sailthru.com')
+      .delete(/^\/content\/watch/)
+      .reply(204, {/* don't care about response */});
+
+    test.expect(1);
+
+    var callback = function(err, res) {
+      test.equal(err, undefined);
+      test.done();
+    };
+    SailthruClient.apiDelete('content/watch', {}, callback);
+  };
+
 
 }).call(this);
