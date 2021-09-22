@@ -5,7 +5,9 @@
     fstatSync: function() { return {size: 1024}; },
     open: function(a,b,cb) { cb(); },
     read: function(a,b,c,d,e,cb) { cb(null, null, b); },
-    close: function() {}
+    close: function() {},
+    realpath: function() {},
+    readFileSync: function() {}
   });
 
 
