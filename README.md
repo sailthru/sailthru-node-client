@@ -21,10 +21,28 @@ Examples
 ### Initialization
 
 ``` js
-var apiKey = '******',
-    apiSecret = '*****',
-    sailthru = require('sailthru-client').createSailthruClient(apiKey, apiSecret);
+const apiKey = '******',
+      apiSecret = '*****',
+      sailthru = require('sailthru-client').createSailthruClient(apiKey, apiSecret);
 ```
+
+### Configuration
+
+By adding an object as the third parameter one can initialize with options. For example:
+
+``` js
+import ProxyAgent from 'https-proxy-agent';
+
+const sailthru = require('sailthru-client').createSailthruClient(apiKey, apiSecret, {
+  agent: new ProxyAgent(process.env.http_proxy),
+  apiUrl: 'api.example.com',
+});
+```
+
+| Option         | Default              | Description          |
+| -------------- | -------------------- | -------------------- |
+| `agent`        | `null`               | Proxy agent to be used by the library in case the application runs behind a proxy. |
+| `apiUrl`       | `'api.sailthru.com'` | Host that requests are made  |
 
 ### Getting version
 
