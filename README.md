@@ -21,9 +21,9 @@ Examples
 ### Initialization
 
 ``` js
-const apiKey = '******',
-      apiSecret = '*****',
-      sailthru = require('sailthru-client').createSailthruClient(apiKey, apiSecret);
+var apiKey = '******',
+    apiSecret = '*****',
+    sailthru = require('sailthru-client').createSailthruClient(apiKey, apiSecret);
 ```
 
 ### Configuration
@@ -31,18 +31,20 @@ const apiKey = '******',
 By adding an object as the third parameter one can initialize with options. For example:
 
 ``` js
-import ProxyAgent from 'https-proxy-agent';
+var ProxyAgent = require('proxy-agent');
 
-const sailthru = require('sailthru-client').createSailthruClient(apiKey, apiSecret, {
-  agent: new ProxyAgent(process.env.http_proxy),
+var proxyUrl = process.env.http_proxy || 'http://168.63.43.102:3128';
+
+var sailthru = require('sailthru-client').createSailthruClient(apiKey, apiSecret, {
+  agent: new ProxyAgent(proxyUrl),
   apiUrl: 'api.example.com',
 });
 ```
 
 | Option         | Default              | Description          |
 | -------------- | -------------------- | -------------------- |
-| `agent`        | `null`               | Proxy agent to be used by the library in case the application runs behind a proxy. |
-| `apiUrl`       | `'api.sailthru.com'` | Host that requests are made  |
+| `agent`        | `null`               | HTTP agent to be used when, for example, the application runs behind a proxy. |
+| `apiUrl`       | `'api.sailthru.com'` | Host to which requests are made  |
 
 ### Getting version
 
