@@ -1,5 +1,7 @@
 (function() {
-  let mock = require('mock-require');
+  const http = require('http');
+  const mock = require('mock-require');
+  const nock = require('nock')
   mock('fs', {
     statSync: function() { return {size: 2}; },
     fstatSync: function() { return {size: 1024}; },
@@ -10,11 +12,11 @@
     readFileSync: function() {}
   });
 
+  const agent = new http.Agent({ keepAlive: true });
 
-  var SailthruClient = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty'),
-    SailthruClientProxy = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', 'http://127.0.0.1:8888'),
-    SailthruClientBadUrl = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', null, 'http://foo'),
-    nock = require('nock');
+  const SailthruClient = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty'),
+    SailthruClientAgent = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', { agent }),
+    SailthruClientBadUrl = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', { apiUrl: 'http://foo' });
 
   SailthruClient.disableLogging();
   SailthruClientBadUrl.disableLogging();
@@ -116,8 +118,8 @@
     SailthruClient.getLists(callback2);
   };
 
-  var verifyPortProtocolLeadsToExpectedHTTPCall = function(api_url, expected_url, test) {
-    var SailthruClientLocal = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', null, api_url);
+  var verifyPortProtocolLeadsToExpectedHTTPCall = function(apiUrl, expected_url, test) {
+    var SailthruClientLocal = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', { apiUrl });
     SailthruClientLocal.disableLogging();
     nock(expected_url).get(/^\/list/).reply(200, {});
     test.expect(1);
@@ -160,7 +162,7 @@
   exports.portAndProtocolOptionsPortWithoutProtocol = function(test) {
     // API client does not support specifying port without protocol, so expect Error
     test.throws(function() {
-        require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', null, 'api.sailthru.com:80');
+        require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', { apiUrl: 'api.sailthru.com:80'});
     }, Error);
     test.done();
   };
@@ -168,65 +170,27 @@
   exports.portAndProtocolOptionsInvalidProtocol = function(test) {
     // API client does not support protocols other than HTTP and HTTPS
     test.throws(function() {
-        require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', null, 'ftp://api.sailthru.com');
+        require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', { apiUrl: 'ftp://api.sailthru.com'});
     }, Error);
     test.done();
   };
 
-  var verifyProxyLeadsToExpectedAPICall = function(proxy_url, expected_url, test) {
-    var SailthruClientLocal = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', proxy_url);
-    SailthruClientLocal.disableLogging();
-    nock('https://api.sailthru.com').get(/^\/list/).reply(200, {});
-    test.expect(1);
-    SailthruClientLocal.getLists(function(err, res) {
-      test.equal(err, undefined);
-      test.done();
-    });
-  };
+  exports.agentUsedWhenProvided = function(test) {
+    nock('https://api.sailthru.com')
+      .post(/^\/blast/, function(q) {
+        var data = JSON.parse(q.json);
+        test.equal(this.agent instanceof http.Agent, true);
+        return data.blast_id == 1234 && data.paused == true;
+      }).reply(200, {/* don't care about response */});
 
-  exports.apiCallViaProxy = function(test) {
-    verifyProxyLeadsToExpectedAPICall('http://127.0.0.1:8888', 'https://api.sailthru.com', test);
-  };
-
-  exports.apiCallViaHttpsProxy = function(test) {
-    verifyProxyLeadsToExpectedAPICall('https://127.0.0.1:8888', 'https://api.sailthru.com', test);
-  };
-
-  exports.apiCallViaSOCKSProxy = function(test) {
-    verifyProxyLeadsToExpectedAPICall('socks://127.0.0.1:8888', 'https://api.sailthru.com', test);
-  };
-
-  exports.apiCallViaPACProxy = function(test) {
-    verifyProxyLeadsToExpectedAPICall('pac+http://127.0.0.1:8888', 'https://api.sailthru.com', test);
-  };
-
-
-  exports.proxyUrlInvalidProtocol = function(test) {
-    // Proxy URL must have a valid protocol (HTTP, HTTPS, SOCKS, SOCKS4, SOCKS5, PAC+HTTP)
-    test.throws(function() {
-        require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty', 'www.example.com:8888');
-    }, Error);
-    test.done();
-  };
-
-  exports.multipartWithProxy = function(test) {
-    nock('http://127.0.0.1:8888')
-      .post(/^https:\/\/api.sailthru.com\/.*/, function(q) {
-        return q.match(/new_users.csv/);
-      }).reply(200, 'success');
-
-    test.expect(1);
+    test.expect(2);
 
     var callback = function(err, res) {
       test.equal(err, undefined);
       test.done();
     };
-    var options = {
-      list: 'abc',
-      file: 'tmp/new_users.csv'
-    };
-    SailthruClientProxy.processJob('import', options, 'report@example.com', 'http://example.com/post.php', ['file'], callback);
-  }
+    SailthruClientAgent.pauseBlast(1234, callback);
+  };
 
   exports.getUserBySidWithEmail = function(test) {
     nock('https://api.sailthru.com')

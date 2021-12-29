@@ -26,6 +26,26 @@ var apiKey = '******',
     sailthru = require('sailthru-client').createSailthruClient(apiKey, apiSecret);
 ```
 
+### Configuration
+
+By adding an object as the third parameter one can initialize with options. For example:
+
+``` js
+var ProxyAgent = require('proxy-agent');
+
+var proxyUrl = process.env.http_proxy || 'http://168.63.43.102:3128';
+
+var sailthru = require('sailthru-client').createSailthruClient(apiKey, apiSecret, {
+  agent: new ProxyAgent(proxyUrl),
+  apiUrl: 'api.example.com',
+});
+```
+
+| Option         | Default              | Description          |
+| -------------- | -------------------- | -------------------- |
+| `agent`        | `null`               | HTTP agent to be used when, for example, the application runs behind a proxy. |
+| `apiUrl`       | `'api.sailthru.com'` | Host to which requests are made  |
+
 ### Getting version
 
 ``` js
