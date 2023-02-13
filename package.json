@@ -1,7 +1,7 @@
 {
   "name": "sailthru-client",
   "description": "Node.js client for Sailthru API",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "author": {
     "name": "George Liao",
     "email": "gliao@sailthru.com",
@@ -24,7 +24,7 @@
     "nodeunit": "^0.11.3"
   },
   "engines": {
-    "node": ">=0.4"
+    "node": ">=18.14"
   },
   "license": "MIT"
 }
