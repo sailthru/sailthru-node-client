@@ -450,12 +450,19 @@
   };
 
   exports.processJobWithFile = function(test) {
+    var SailthruClientWithMockLog2Function = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty');
+    SailthruClientWithMockLog2Function.log2 = function(string) {
+      if (/json payload/i.test(string)) {
+        test.ok(/TRUNCATED/.test(string));
+      }
+    }
+
     nock(/.*sailthru.com.*/)
       .post(/.*/, function(q) {
         return q.match(/new_users.csv/);
       }).reply(200, 'success');
 
-    test.expect(1);
+    test.expect(2);
 
     var callback = function(err, res) {
       test.equal(err, undefined);
@@ -465,7 +472,7 @@
       list: 'abc',
       file: 'tmp/new_users.csv'
     };
-    SailthruClient.processJob('import', options, 'report@example.com', 'http://example.com/post.php', ['file'], callback);
+    SailthruClientWithMockLog2Function.processJob('import', options, 'report@example.com', 'http://example.com/post.php', ['file'], callback);
   };
 
   exports.getLastRateLimitInfoSingleCase = function(test) {
