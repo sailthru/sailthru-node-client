@@ -7,6 +7,9 @@
     "email": "gliao@sailthru.com",
     "url": "http://www.sailthru.com"
   },
+  "scripts": {
+    "test": "grunt"
+  },
   "repository": {
     "type": "git",
     "url": "http://github.com/sailthru/sailthru-node-client.git"
