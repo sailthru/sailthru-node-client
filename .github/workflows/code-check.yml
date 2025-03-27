@@ -1,0 +1,35 @@
+name: Code Quality Check
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # test against LTS versions of Node
+        node: [18, 20, 22]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install Grunt
+        run: npm install -g grunt-cli
+        env:
+          CI: true
+
+      - name: Install dependencies
+        run: npm install
+        env:
+          CI: true
+
+      - name: Test
+        run: grunt
