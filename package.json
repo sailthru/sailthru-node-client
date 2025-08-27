@@ -11,17 +11,36 @@
     "type": "git",
     "url": "http://github.com/sailthru/sailthru-node-client.git"
   },
-  "main": "./lib/sailthru.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "dependencies": {
     "needle": "^3.2.0"
   },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "npm run typecheck",
+    "prepublishOnly": "npm run build && npm run test && npm run typecheck"
+  },
   "devDependencies": {
-    "grunt": "^1.0.1",
-    "grunt-cli": "^1.3.2",
-    "grunt-contrib-nodeunit": "^4.0.0",
-    "mock-require": "^3.0.0",
+    "@types/needle": "^3.3.0",
+    "@types/node": "^24.3.0",
     "nock": "^13.3.0",
-    "nodeunit": "^0.11.3"
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2",
+    "vitest": "^1.6.1"
   },
   "engines": {
     "node": ">=18.14"

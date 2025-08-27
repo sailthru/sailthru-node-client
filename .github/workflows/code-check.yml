@@ -1,10 +1,14 @@
-name: Code Quality Check
+name: CI/CD Pipeline
 
-on: [push]
+on: 
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
 
 jobs:
-  build:
-
+  test:
+    name: Test & Build
     runs-on: ubuntu-latest
 
     strategy:
@@ -14,22 +18,71 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Install Grunt
-        run: npm install -g grunt-cli
-        env:
-          CI: true
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         env:
           CI: true
 
-      - name: Test
-        run: grunt
+      - name: Run TypeScript type checking
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Test built CommonJS version
+        run: |
+          node -e "
+          const sailthru = require('./dist/index.js'); 
+          console.log('✅ VERSION:', sailthru.VERSION);
+          console.log('✅ CommonJS import works');
+          const client = sailthru.createSailthruClient('test', 'test');
+          console.log('✅ Client creation works');
+          "
+
+      - name: Test built ESM version  
+        run: |
+          node -e "
+          import('./dist/index.mjs').then(sailthru => {
+            console.log('✅ ESM import works');
+            console.log('✅ VERSION:', sailthru.VERSION);
+            const client = sailthru.createSailthruClient('test', 'test');
+            console.log('✅ ESM client creation works');
+          }).catch(console.error);
+          "
+
+      - name: Verify TypeScript definitions
+        run: |
+          echo "Checking that .d.ts files exist and are valid:"
+          ls -la dist/*.d.ts
+          echo "✅ TypeScript definitions generated"
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit (production dependencies only)
+        run: npm audit --audit-level=moderate --omit=dev
