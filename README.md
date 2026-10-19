@@ -15,6 +15,12 @@ Installation
 npm install sailthru-client --save
 ```
 
+### Node.js compatibility
+
+Requires Node.js >=18.14. CI tests Node 18, 20, 22, 24, and the latest stable
+release (`current`); the open-ended engine range does not guarantee compatibility
+with every future or prerelease runtime.
+
 Examples
 --------
 
@@ -189,7 +195,11 @@ Development
 -----------
 
 ```
-npm install -g grunt-cli
-npm install # to install dependencies locally
-grunt # for running tests
+npm ci
+npm test
+npm run test:package
 ```
+
+The package check installs the built tarball and makes a local request with dummy
+credentials. Both checks run on PRs, pushes to `master`, weekly, and manual runs,
+and before a normal `npm publish` through `prepublishOnly`.
