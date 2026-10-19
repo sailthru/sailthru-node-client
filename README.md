@@ -15,6 +15,18 @@ Installation
 npm install sailthru-client --save
 ```
 
+### Node.js compatibility
+
+The `engines.node` setting (`>=18.14`) specifies the minimum runtime requirement.
+The tested support targets are Node.js 18, 20, 22, 24, and the latest stable
+release (`current`).
+The open-ended engine range does not guarantee compatibility with every future
+major version or with prerelease runtimes.
+
+The test suite and packaged-client smoke test run on pull requests, pushes to
+`master`, and weekly on Mondays at 04:17 UTC. The `current` target follows new
+stable Node.js releases without requiring a repository change.
+
 Examples
 --------
 
@@ -189,7 +201,20 @@ Development
 -----------
 
 ```
-npm install -g grunt-cli
-npm install # to install dependencies locally
-grunt # for running tests
+npm ci
+npm test
+npm run test:package
 ```
+
+The package smoke test creates an npm tarball, installs it with runtime
+dependencies in a temporary directory, and loads the installed client. It then
+makes a request to a local test server with default logging enabled; no Sailthru
+credentials or live API access are needed.
+
+Both test commands perform validation only; neither publishes a package.
+`prepublishOnly` runs them before a normal `npm publish`. GitHub's scheduled
+checks start once the workflow is present on `master`.
+
+Maintainers should check that the scheduled workflow remains enabled. In public
+repositories, GitHub automatically disables schedules after 60 days without
+repository activity; see [GitHub's schedule documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).
