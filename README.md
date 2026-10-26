@@ -17,8 +17,8 @@ npm install sailthru-client --save
 
 ### Node.js compatibility
 
-Requires Node.js >=18.14. CI tests Node 18, 20, 22, 24, and the latest stable
-release (`current`); the open-ended engine range does not guarantee compatibility
+Requires Node.js >=18.14. CI discovers every released Node major from 18 through
+the latest stable release; the open-ended engine range does not guarantee compatibility
 with every future or prerelease runtime.
 
 Examples
