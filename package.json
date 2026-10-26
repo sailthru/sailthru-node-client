@@ -12,6 +12,11 @@
     "url": "http://github.com/sailthru/sailthru-node-client.git"
   },
   "main": "./lib/sailthru.js",
+  "scripts": {
+    "test": "grunt",
+    "test:package": "node scripts/test-package.js",
+    "prepublishOnly": "npm test && npm run test:package"
+  },
   "dependencies": {
     "needle": "^3.2.0"
   },

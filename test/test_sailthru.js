@@ -192,6 +192,25 @@
     SailthruClientAgent.pauseBlast(1234, callback);
   };
 
+  exports.apiPostWithDefaultLogging = function(test) {
+    const client = require('../lib/sailthru').createSailthruClient('abcd12345', '1324qwerty');
+    const response = { ok: true };
+    const request = nock('https://api.sailthru.com')
+      .post('/user', function(body) {
+        return JSON.parse(body.json).id === 'signup@example.com';
+      })
+      .reply(200, response);
+
+    test.expect(4);
+    test.equal(client.request.logging, true);
+    client.apiPost('user', { id: 'signup@example.com' }, function(err, result) {
+      test.equal(err, null);
+      test.deepEqual(result, response);
+      test.ok(request.isDone());
+      test.done();
+    });
+  };
+
   exports.getUserBySidWithEmail = function(test) {
     nock('https://api.sailthru.com')
       .get(/^\/user/)

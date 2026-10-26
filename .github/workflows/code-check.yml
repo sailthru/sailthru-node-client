@@ -1,35 +1,62 @@
 name: Code Quality Check
 
-on: [push]
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    # Check runtime compatibility every Monday at 04:17 UTC.
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-
+  discover:
+    name: Discover runtimes
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      versions: ${{ steps.versions.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test discovery and list stable runtimes
+        id: versions
+        uses: actions/github-script@v7
+        with:
+          script: |
+            require('node:child_process').execFileSync(process.execPath,
+              ['--test', '.github/scripts/runtime-matrix.test.cjs'], {stdio: 'inherit'});
+            await require('./.github/scripts/runtime-matrix.cjs')({core});
+
+  build:
+    needs: discover
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     strategy:
+      fail-fast: false
       matrix:
-        # test against LTS versions of Node
-        node: [18, 20, 22]
+        node: ${{ fromJSON(needs.discover.outputs.versions) }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Install Grunt
-        run: npm install -g grunt-cli
-        env:
-          CI: true
+          check-latest: true
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
-        env:
-          CI: true
+        run: npm ci
 
       - name: Test
-        run: grunt
+        run: npm test
+
+      - name: Install and exercise the packaged client
+        run: npm run test:package
